@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slot Machine Layout - Event Prize Edition</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #ffd700;
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        p {
+            color: #a0a0a0;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .download-btn {
+            display: block;
+            margin: 30px auto;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(255, 215, 0, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(255, 215, 0, 0.5);
+        }
+        
+        .layout-preview {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎰 Slot Machine Layout Template</h1>
+        <p>This is your sample layout design. Right-click the image below and "Save As" to use it!</p>
+        
+        <div class="layout-preview">
+            <svg viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg" id="slotLayout">
+                <!-- Main machine body with gradient -->
+                <defs>
+                    <!-- Gradients -->
+                    <linearGradient id="mainGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#6366F1;stop-opacity:1" />
+                    </linearGradient>
+                    
+                    <linearGradient id="screenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#1e293b;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#0f172a;stop-opacity:1" />
+                    </linearGradient>
+                    
+                    <linearGradient id="buttonGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:1" />
+                    </linearGradient>
+                    
+                    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#ec4899;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#f43f5e;stop-opacity:1" />
+                    </linearGradient>
+                    
+                    <!-- Shadows -->
+                    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                        <feOffset dx="0" dy="4" result="offsetblur"/>
+                        <feComponentTransfer>
+                            <feFuncA type="linear" slope="0.3"/>
+                        </feComponentTransfer>
+                        <feMerge> 
+                            <feMergeNode/>
+                            <feMergeNode in="SourceGraphic"/> 
+                        </feMerge>
+                    </filter>
+                    
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                
+                <!-- Background -->
+                <rect width="600" height="800" fill="#f8fafc" rx="24"/>
+                
+                <!-- Decorative top arc -->
+                <path d="M 0 0 Q 300 100 600 0 L 600 120 L 0 120 Z" fill="url(#mainGrad)" opacity="0.1"/>
+                
+                <!-- Main machine body -->
+                <rect x="50" y="80" width="500" height="640" rx="32" fill="url(#mainGrad)" filter="url(#shadow)"/>
+                
+                <!-- Inner shadow/depth -->
+                <rect x="60" y="90" width="480" height="620" rx="28" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.2"/>
+                
+                <!-- Decorative side panels -->
+                <rect x="50" y="150" width="40" height="400" fill="#7c3aed" opacity="0.3" rx="8"/>
+                <rect x="510" y="150" width="40" height="400" fill="#7c3aed" opacity="0.3" rx="8"/>
+                
+                <!-- Title banner -->
+                <rect x="100" y="100" width="400" height="60" rx="16" fill="url(#accentGrad)" filter="url(#shadow)"/>
+                <text x="300" y="140" font-size="32" font-weight="bold" fill="white" text-anchor="middle" font-family="Impact, sans-serif">LUCKY SPIN</text>
+                
+                <!-- Screen/Reel area (THIS IS WHERE SYMBOLS APPEAR - 24% from top, 31% height) -->
+                <rect x="100" y="192" width="400" height="248" rx="20" fill="url(#screenGrad)" filter="url(#shadow)"/>
+                
+                <!-- Screen border glow -->
+                <rect x="100" y="192" width="400" height="248" rx="20" fill="none" stroke="url(#accentGrad)" stroke-width="3" filter="url(#glow)"/>
+                
+                <!-- Screen inner border -->
+                <rect x="110" y="202" width="380" height="228" rx="16" fill="none" stroke="#475569" stroke-width="2" opacity="0.5"/>
+                
+                <!-- Reel dividers (showing 3 reel positions) -->
+                <line x1="225" y1="202" x2="225" y2="430" stroke="#475569" stroke-width="2" opacity="0.3"/>
+                <line x1="375" y1="202" x2="375" y2="430" stroke="#475569" stroke-width="2" opacity="0.3"/>
+                
+                <!-- Message/Info display area (57.5% from top) -->
+                <rect x="120" y="460" width="360" height="50" rx="12" fill="#1e293b" opacity="0.5"/>
+                <text x="300" y="492" font-size="18" fill="#94a3b8" text-anchor="middle" font-family="Arial, sans-serif">Tap SPIN to win your prize!</text>
+                
+                <!-- Decorative lights around screen -->
+                <circle cx="120" cy="210" r="8" fill="#fbbf24" filter="url(#glow)"/>
+                <circle cx="480" cy="210" r="8" fill="#fbbf24" filter="url(#glow)"/>
+                <circle cx="120" cy="422" r="8" fill="#fbbf24" filter="url(#glow)"/>
+                <circle cx="480" cy="422" r="8" fill="#fbbf24" filter="url(#glow)"/>
+                
+                <!-- Circular SPIN button (70% from top, 22% width) -->
+                <circle cx="300" cy="580" r="66" fill="url(#buttonGrad)" filter="url(#shadow)"/>
+                <circle cx="300" cy="580" r="66" fill="none" stroke="#ffffff" stroke-width="4" opacity="0.3"/>
+                <circle cx="300" cy="580" r="56" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+                
+                <!-- Button text -->
+                <text x="300" y="595" font-size="28" font-weight="bold" fill="#1e293b" text-anchor="middle" font-family="Impact, sans-serif">SPIN</text>
+                
+                <!-- Decorative bottom elements -->
+                <rect x="150" y="670" width="300" height="30" rx="15" fill="#1e293b" opacity="0.3"/>
+                
+                <!-- Corner decorations -->
+                <circle cx="80" cy="110" r="12" fill="#fbbf24" opacity="0.6"/>
+                <circle cx="520" cy="110" r="12" fill="#fbbf24" opacity="0.6"/>
+                <circle cx="80" cy="690" r="12" fill="#fbbf24" opacity="0.6"/>
+                <circle cx="520" cy="690" r="12" fill="#fbbf24" opacity="0.6"/>
+                
+                <!-- Accent stars -->
+                <text x="140" y="135" font-size="24" fill="#fbbf24" filter="url(#glow)">★</text>
+                <text x="460" y="135" font-size="24" fill="#fbbf24" filter="url(#glow)">★</text>
+                
+                <!-- Prize label at bottom -->
+                <text x="300" y="695" font-size="16" font-weight="bold" fill="#8b5cf6" text-anchor="middle" font-family="Arial, sans-serif">WIN YOUR PRIZE!</text>
+            </svg>
+        </div>
+        
+        <button class="download-btn" onclick="downloadSVG()">💾 Download Layout Template</button>
+        
+        <div style="color: #a0a0a0; text-align: left; margin-top: 40px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px;">
+            <h3 style="color: #ffd700; margin-top: 0;">📐 Design Guidelines:</h3>
+            <ul style="line-height: 1.8;">
+                <li><strong>Screen Area:</strong> The dark rectangle (192px from top, 248px height) is where symbols appear</li>
+                <li><strong>3 Reels:</strong> Vertical dividers show the 3 symbol positions</li>
+                <li><strong>Spin Button:</strong> Circular button at 580px from top (70% position)</li>
+                <li><strong>Message Area:</strong> Text box at 460px shows game messages</li>
+                <li><strong>Canvas Size:</strong> 600×800px - keep this ratio for best results</li>
+                <li><strong>File Format:</strong> Save as PNG for best quality in your slot machine</li>
+            </ul>
+            
+            <h3 style="color: #ffd700; margin-top: 30px;">🎨 Customization Tips:</h3>
+            <ul style="line-height: 1.8;">
+                <li>Change the gradient colors to match your event theme</li>
+                <li>Replace "LUCKY SPIN" with your event name</li>
+                <li>Modify the decorative elements (stars, lights, corners)</li>
+                <li>Keep the screen area and button positions consistent</li>
+                <li>Use image editing software to add your own graphics/logos</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        function downloadSVG() {
+            const svg = document.getElementById('slotLayout');
+            const serializer = new XMLSerializer();
+            const svgString = serializer.serializeToString(svg);
+            
+            // Create canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = 600;
+            canvas.height = 800;
+            const ctx = canvas.getContext('2d');
+            
+            // Create image from SVG
+            const img = new Image();
+            const svgBlob = new Blob([svgString], {type: 'image/svg+xml;charset=utf-8'});
+            const url = URL.createObjectURL(svgBlob);
+            
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0);
+                URL.revokeObjectURL(url);
+                
+                // Download as PNG
+                canvas.toBlob(function(blob) {
+                    const link = document.createElement('a');
+                    link.download = 'slot_machine_layout.png';
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+                });
+            };
+            
+            img.src = url;
+        }
+    </script>
+</body>
+</html>
