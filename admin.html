@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Event Slot Machine - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            height: -webkit-fill-available;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            padding: 40px 20px;
+            color: #2d3436;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        h1 {
+            font-size: clamp(28px, 5vw, 42px);
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        h1 .text-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: clamp(14px, 2.5vw, 18px);
+            color: #636e72;
+            font-weight: 500;
+        }
+        
+        /* Navigation */
+        .nav {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .btn {
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #2d3436;
+            border: 2px solid #e1e8ed;
+        }
+        
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            border-color: #cbd5e0;
+            transform: translateY(-2px);
+        }
+        
+        /* Status badge */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 32px;
+            animation: fadeIn 1s ease-out;
+        }
+        
+        .status.online {
+            background: linear-gradient(135deg, #d4f8e8 0%, #b8f5d7 100%);
+            color: #00b894;
+        }
+        
+        .status.offline {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
+            color: #f39c12;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Card sections */
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            animation: slideUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        
+        .card h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .card-icon {
+            font-size: 28px;
+        }
+        
+        /* Symbols grid */
+        .symbols-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 20px;
+        }
+        
+        .symbol-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+        }
+        
+        .symbol-card:hover {
+            border-color: #667eea;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        }
+        
+        .symbol-preview {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .symbol-preview img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+        
+        .symbol-name {
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+        
+        .symbol-name-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 12px;
+            text-align: center;
+            transition: border-color 0.2s;
+            background: white;
+        }
+        
+        .symbol-name-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .upload-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        
+        .upload-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Form controls */
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+        
+        .form-group input[type="number"],
+        .form-group input[type="range"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+        
+        .form-group input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .range-value {
+            display: inline-block;
+            margin-left: 12px;
+            font-weight: 700;
+            color: #667eea;
+            font-size: 16px;
+        }
+        
+        .error-message {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 10px;
+            margin-top: 12px;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .error-message.show {
+            display: flex;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .success-message {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 10px;
+            margin-top: 12px;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .success-message.show {
+            display: flex;
+            animation: slideDown 0.4s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Background Customization */
+        .bg-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .bg-option-card {
+            background: #f8f9fa;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .bg-option-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        
+        .bg-option-card.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        }
+        
+        .color-picker-wrapper {
+            margin: 20px 0;
+        }
+        
+        .color-picker-wrapper input[type="color"] {
+            width: 100%;
+            height: 60px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .bg-preset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .bg-preset-item {
+            background: white;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .bg-preset-item:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        
+        .bg-preset-preview {
+            height: 100px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .bg-preset-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .bg-preset-colors {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .bg-preset-color-box {
+            flex: 1;
+            height: 30px;
+            border-radius: 6px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .bg-preset-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .bg-preset-actions button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-edit-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .preset-edit-btn:hover {
+            background: #5568d3;
+        }
+
+        .preset-use-btn {
+            background: #00b894;
+            color: white;
+        }
+
+        .preset-use-btn:hover {
+            background: #00a085;
+        }
+        
+        .preset-delete-btn {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .preset-delete-btn:hover {
+            background: #ee5a6f;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .symbols-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 16px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+                padding-top: max(20px, env(safe-area-inset-top));
+                padding-bottom: max(20px, env(safe-area-inset-bottom));
+            }
+            
+            .card {
+                padding: 24px 16px;
+            }
+            
+            header {
+                margin-bottom: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎰 <span class="text-gradient">Event Slot Machine Settings</span></h1>
+            <p class="subtitle">Configure your lucky spin experience</p>
+        </header>
+        
+        <div class="status" id="status">
+            <span class="status-dot"></span>
+            <span>Checking connection...</span>
+        </div>
+        
+        <div class="nav">
+            <a href="spintest_event.html" class="btn btn-primary">
+                <span>🎮</span> Open Slot Machine
+            </a>
+            <button class="btn btn-secondary" onclick="resetSettings()">
+                <span>🔄</span> Reset to Defaults
+            </button>
+        </div>
+        
+        <!-- Symbols Section -->
+        <div class="card">
+            <h2>
+                <span class="card-icon">🎨</span>
+                Prize Symbols
+            </h2>
+            <div class="symbols-grid" id="symbols-grid"></div>
+        </div>
+        
+        <!-- Probabilities Section -->
+        <div class="card">
+            <h2>
+                <span class="card-icon">🎲</span>
+                Win Probabilities
+            </h2>
+            <p style="color: #636e72; margin-bottom: 24px;">Set the chance for each outcome. Total must equal 100%</p>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>🏆 Jackpot (3 Match) %</label>
+                    <input type="number" id="three-match" value="10" min="0" max="100" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>🎁 Win (2 Match) %</label>
+                    <input type="number" id="two-match" value="25" min="0" max="100" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>🎫 Consolation (No Match) %</label>
+                    <input type="number" id="no-match" value="65" min="0" max="100" step="0.1">
+                </div>
+            </div>
+            
+            <div class="error-message" id="prob-error">
+                <span>⚠️</span>
+                <span>Probabilities must add up to 100%!</span>
+            </div>
+            
+            <button class="btn btn-primary" onclick="saveSettings()" style="margin-top: 20px;">
+                <span>💾</span> Save Probabilities
+            </button>
+            <div class="success-message" id="settings-success">
+                <span>✓</span>
+                <span>Settings saved successfully!</span>
+            </div>
+        </div>
+        
+        <!-- Animation Settings -->
+        <div class="card">
+            <h2>
+                <span class="card-icon">⚡</span>
+                Spin Animation
+            </h2>
+            <div class="form-group">
+                <label>
+                    Spin Duration: <span class="range-value" id="speed-value">2.0s</span>
+                </label>
+                <input type="range" id="spin-speed" min="1" max="10" step="0.1" value="2" 
+                       oninput="document.getElementById('speed-value').textContent = this.value + 's'">
+            </div>
+            
+            <button class="btn btn-primary" onclick="saveSettings()">
+                <span>💾</span> Save Animation Speed
+            </button>
+        </div>
+        
+
+        <!-- Layout Design Upload -->
+        <div class="card">
+            <h2>
+                <span class="card-icon">🎭</span>
+                Event Layout Design
+            </h2>
+            <p style="color: #636e72; margin-bottom: 24px;">Upload custom layout designs for your event</p>
+            
+            <div class="form-grid" style="margin-bottom: 24px;">
+                <div class="form-group">
+                    <label style="font-weight: 600; margin-bottom: 12px; display: block;">
+                        📊 Prize Legend Layout (Top Box)
+                    </label>
+                    <button class="btn btn-primary" onclick="document.getElementById('legend-layout-upload').click()" style="width: 100%; margin-bottom: 12px;">
+                        <span>📤</span> Upload Legend Layout
+                    </button>
+                    <input type="file" id="legend-layout-upload" style="display: none" accept="image/*" onchange="uploadLayoutImage(event, 'legend')">
+                    <div id="legend-preview" style="margin-top: 12px; border: 2px dashed #ddd; border-radius: 12px; padding: 16px; text-align: center; min-height: 100px; display: flex; align-items: center; justify-content: center;">
+                        <span style="color: #999;">No layout uploaded</span>
+                    </div>
+                    <button class="btn btn-secondary" onclick="removeLayoutImage('legend')" style="width: 100%; margin-top: 12px; display: none;" id="remove-legend-btn">
+                        <span>🗑️</span> Remove Legend Layout
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <label style="font-weight: 600; margin-bottom: 12px; display: block;">
+                        🎰 Slot Machine Layout (Bottom Box)
+                    </label>
+                    <button class="btn btn-primary" onclick="document.getElementById('machine-layout-upload').click()" style="width: 100%; margin-bottom: 12px;">
+                        <span>📤</span> Upload Machine Layout
+                    </button>
+                    <input type="file" id="machine-layout-upload" style="display: none" accept="image/*" onchange="uploadLayoutImage(event, 'machine')">
+                    <div id="machine-preview" style="margin-top: 12px; border: 2px dashed #ddd; border-radius: 12px; padding: 16px; text-align: center; min-height: 100px; display: flex; align-items: center; justify-content: center;">
+                        <span style="color: #999;">No layout uploaded</span>
+                    </div>
+                    <button class="btn btn-secondary" onclick="removeLayoutImage('machine')" style="width: 100%; margin-top: 12px; display: none;" id="remove-machine-btn">
+                        <span>🗑️</span> Remove Machine Layout
+                    </button>
+                </div>
+            </div>
+            
+            <div class="alert" style="background: #e3f2fd; color: #1976d2; padding: 16px; border-radius: 12px; margin-top: 16px;">
+                <strong>💡 Tip:</strong> Upload transparent PNG images for best results. The layout will overlay on the existing sections.
+            </div>
+            
+            <div class="success-message" id="layout-success">
+                <span>✓</span>
+                <span>Layout uploaded successfully!</span>
+            </div>
+        </div>
+
+        <!-- Theme & Appearance Customization -->
+        <div class="card">
+            <h2>
+                <span class="card-icon">🎨</span>
+                Theme & Appearance Customization
+            </h2>
+            <p style="color: #636e72; margin-bottom: 24px;">Customize background and all colors in one place</p>
+            
+            <!-- Background Section -->
+            <div style="margin-bottom: 32px; padding-bottom: 32px; border-bottom: 2px solid #e1e8ed;">
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">🖼️ Background Options</h3>
+                <div class="bg-options">
+                    <div class="bg-option-card" id="bg-color-option" onclick="selectBgOption('color')">
+                        <div style="font-size: 48px; margin-bottom: 12px;">🎨</div>
+                        <div style="font-weight: 600;">Solid Color</div>
+                    </div>
+                    <div class="bg-option-card" id="bg-gradient-option" onclick="selectBgOption('gradient')">
+                        <div style="font-size: 48px; margin-bottom: 12px;">🌈</div>
+                        <div style="font-weight: 600;">Gradient</div>
+                    </div>
+                    <div class="bg-option-card" id="bg-image-option" onclick="selectBgOption('image')">
+                        <div style="font-size: 48px; margin-bottom: 12px;">🖼️</div>
+                        <div style="font-weight: 600;">Upload Image</div>
+                    </div>
+                </div>
+                
+                <!-- Color Picker -->
+                <div id="color-picker-section" style="display: none; margin-top: 16px;">
+                    <div class="color-picker-wrapper">
+                        <label style="font-weight: 600; margin-bottom: 8px; display: block;">Choose Background Color</label>
+                        <input type="color" id="bg-color" value="#1a1a2e">
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 12px;">
+                        <button class="btn btn-primary" onclick="applyColorBackground()" style="flex: 1;">
+                            <span>✓</span> Apply Color
+                        </button>
+                        <button class="btn btn-secondary" onclick="saveColorPreset()" style="flex: 1;">
+                            <span>💾</span> Save as Preset
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Gradient Picker -->
+                <div id="gradient-picker-section" style="display: none; margin-top: 16px;">
+                    <div class="form-grid" style="margin-bottom: 16px;">
+                        <div class="form-group">
+                            <label>Color 1</label>
+                            <input type="color" id="gradient-color1" value="#1a1a2e" style="height: 50px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Color 2</label>
+                            <input type="color" id="gradient-color2" value="#16213e" style="height: 50px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Color 3</label>
+                            <input type="color" id="gradient-color3" value="#0f3460" style="height: 50px;">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn btn-primary" onclick="applyGradientBackground()" style="flex: 1;">
+                            <span>✓</span> Apply Gradient
+                        </button>
+                        <button class="btn btn-secondary" onclick="saveGradientPreset()" style="flex: 1;">
+                            <span>💾</span> Save as Preset
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Image Upload -->
+                <div id="image-upload-section" style="display: none; margin-top: 16px;">
+                    <button class="btn btn-primary" onclick="document.getElementById('bg-image-upload').click()" style="margin-bottom: 16px;">
+                        <span>📤</span> Upload Background Image
+                    </button>
+                    <input type="file" id="bg-image-upload" style="display: none" accept="image/*" onchange="uploadBackgroundImage(event)">
+                </div>
+
+                <!-- Saved Background Presets -->
+                <div style="margin-top: 16px;" id="saved-presets-section">
+                    <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">💾 Saved Background Presets</h4>
+                    <div class="bg-preset-grid" id="bg-presets-grid">
+                        <div style="grid-column: 1/-1; text-align: center; color: #999; padding: 20px;">
+                            No saved presets yet.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Color Theme Section -->
+            <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">🎨 Color Theme</h3>
+            <div class="form-grid" style="margin-bottom: 24px;">
+                <!-- Title Color -->
+                <div class="form-group">
+                    <label>🔤 Title Text Color</label>
+                    <input type="color" id="title-color" value="#ffed4e" style="height: 50px;">
+                </div>
+                
+                <!-- Subtitle Color -->
+                <div class="form-group">
+                    <label>📝 Subtitle Text Color</label>
+                    <input type="color" id="subtitle-color" value="#ffffff" style="height: 50px;">
+                </div>
+                
+                <!-- Prize Box Background -->
+                <div class="form-group">
+                    <label>📦 Prize Box Background</label>
+                    <input type="color" id="prize-box-bg" value="#c084b3" style="height: 50px;">
+                </div>
+                
+                <!-- Prize Box Text -->
+                <div class="form-group">
+                    <label>🏆 Prize Box Text</label>
+                    <input type="color" id="prize-box-text" value="#ffed4e" style="height: 50px;">
+                </div>
+                
+                <!-- Slot Machine Box Background -->
+                <div class="form-group">
+                    <label>🎰 Slot Machine Box</label>
+                    <input type="color" id="slot-box-bg" value="#e8a0bf" style="height: 50px;">
+                </div>
+                
+                <!-- Reel Inside Color -->
+                <div class="form-group">
+                    <label>🎡 Reel Inside Color</label>
+                    <input type="color" id="reel-bg" value="#1a1a2e" style="height: 50px;">
+                </div>
+                
+                <!-- Spin Button Background -->
+                <div class="form-group">
+                    <label>🔘 Spin Button Background</label>
+                    <input type="color" id="spin-btn-bg" value="#ffed4e" style="height: 50px;">
+                </div>
+                
+                <!-- Spin Button Text -->
+                <div class="form-group">
+                    <label>⚡ Spin Button Text</label>
+                    <input type="color" id="spin-btn-text" value="#000000" style="height: 50px;">
+                </div>
+                
+                <!-- Instruction Text -->
+                <div class="form-group">
+                    <label>💬 Instruction Text</label>
+                    <input type="color" id="instruction-text" value="#ffed4e" style="height: 50px;">
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                <button class="btn btn-primary" onclick="applyColorTheme()" style="flex: 1;">
+                    <span>✓</span> Apply Colors
+                </button>
+                <button class="btn btn-secondary" onclick="saveColorThemePreset()" style="flex: 1;">
+                    <span>💾</span> Save as Preset
+                </button>
+                <button class="btn btn-secondary" onclick="resetColorTheme()">
+                    <span>🔄</span> Reset to Default
+                </button>
+            </div>
+
+            <!-- Saved Color Theme Presets -->
+            <div style="margin-top: 16px;">
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">💾 Saved Color Theme Presets</h4>
+                <div class="bg-preset-grid" id="color-theme-presets-grid">
+                    <div style="grid-column: 1/-1; text-align: center; color: #999; padding: 20px;">
+                        No saved color themes yet.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="success-message" id="theme-success">
+                <span>✓</span>
+                <span>Theme saved successfully!</span>
+            </div>
+            
+            <div class="success-message" id="bg-success">
+                <span>✓</span>
+                <span>Background saved successfully!</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const defaultSymbols = [
+            { name: 'Cherry', emoji: '🍒' },
+            { name: 'Seven', emoji: '7️⃣' },
+            { name: 'Lemon', emoji: '🍋' },
+            { name: 'Orange', emoji: '🍊' },
+            { name: 'Star', emoji: '⭐' },
+            { name: 'Diamond', emoji: '💎' },
+            { name: 'Bell', emoji: '🔔' },
+            { name: 'Clover', emoji: '🍀' }
+        ];
+        
+        // Dynamic server URL detection
+        const SERVER_URLS = [
+            'http://192.168.50.146:3000',
+            'http://localhost:3000',
+            window.location.origin
+        ];
+        
+        async function fetchFromServer(endpoint, options = {}) {
+            for (const baseUrl of SERVER_URLS) {
+                try {
+                    console.log(`Trying: ${baseUrl}${endpoint}`);
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 3000);
+                    
+                    const res = await fetch(`${baseUrl}${endpoint}`, {
+                        ...options,
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (res.ok) {
+                        console.log(`✓ Connected to ${baseUrl}`);
+                        return await res.json();
+                    }
+                } catch (e) {
+                    console.log(`✗ Failed ${baseUrl}: ${e.message}`);
+                }
+            }
+            return null;
+        }
+        
+        async function saveToServer(id, value) {
+            for (const baseUrl of SERVER_URLS) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 3000);
+                    
+                    const res = await fetch(`${baseUrl}/api/save`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id, value }),
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (res.ok) {
+                        console.log(`Saved ${id} to ${baseUrl}`);
+                        return true;
+                    }
+                } catch (e) {
+                    console.log(`Failed to save to ${baseUrl}: ${e.message}`);
+                }
+            }
+            return false;
+        }
+        
+        let serverAvailable = false;
+        
+        let symbols = JSON.parse(localStorage.getItem('slotSymbols')) || 
+                     defaultSymbols.map(s => ({ ...s, image: null }));
+        
+        // Check server status
+        async function checkServer() {
+            const result = await fetchFromServer('/api/load/test');
+            if (result !== null) {
+                serverAvailable = true;
+                document.getElementById('status').className = 'status online';
+                document.getElementById('status').innerHTML = '<span class="status-dot"></span><span>Connected to server</span>';
+            } else {
+                serverAvailable = false;
+                document.getElementById('status').className = 'status offline';
+                document.getElementById('status').innerHTML = '<span class="status-dot"></span><span>Using local storage only</span>';
+            }
+        }
+        // Render symbols
+        function renderSymbols() {
+            const grid = document.getElementById('symbols-grid');
+            grid.innerHTML = '';
+            
+            symbols.forEach((s, i) => {
+                const card = document.createElement('div');
+                card.className = 'symbol-card';
+                card.innerHTML = `
+                    <div class="symbol-preview">
+                        ${s.image ? `<img src="${s.image}" alt="${s.name}">` : s.emoji}
+                    </div>
+                    <input type="text" class="symbol-name-input" 
+                           value="${s.name}" 
+                           onchange="updateSymbolName(${i}, this.value)"
+                           placeholder="Symbol Name">
+                    <button class="upload-btn" onclick="document.getElementById('upload-${i}').click()">
+                        📤 ${s.image ? 'Change' : 'Upload'} Image
+                    </button>
+                    <input type="file" id="upload-${i}" style="display:none" 
+                           accept="image/*" onchange="uploadSymbol(${i}, event)">
+                    ${s.image ? `<button class="upload-btn" style="background: #ff6b6b; margin-top: 8px;" onclick="resetSymbol(${i})">Reset to Emoji</button>` : ''}
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        // Upload symbol
+        async function uploadSymbol(index, event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async e => {
+                    symbols[index].image = e.target.result;
+                    localStorage.setItem('slotSymbols', JSON.stringify(symbols));
+                    
+                    if (serverAvailable) {
+                        await saveToServer('symbols', symbols);
+                    }
+                    
+                    renderSymbols();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // Reset symbol to emoji
+        function resetSymbol(index) {
+            symbols[index].image = null;
+            localStorage.setItem('slotSymbols', JSON.stringify(symbols));
+            renderSymbols();
+        }
+        
+        // Update symbol name
+        async function updateSymbolName(index, newName) {
+            if (newName.trim()) {
+                symbols[index].name = newName.trim();
+                localStorage.setItem('slotSymbols', JSON.stringify(symbols));
+                
+                if (serverAvailable) {
+                    await saveToServer('symbols', symbols);
+                }
+            }
+        }
+        
+        // Save settings
+        async function saveSettings() {
+            const three = parseFloat(document.getElementById('three-match').value);
+            const two = parseFloat(document.getElementById('two-match').value);
+            const none = parseFloat(document.getElementById('no-match').value);
+            
+            const errorEl = document.getElementById('prob-error');
+            if (Math.abs((three + two + none) - 100) > 0.01) {
+                errorEl.classList.add('show');
+                setTimeout(() => errorEl.classList.remove('show'), 3000);
+                return;
+            }
+            errorEl.classList.remove('show');
+            
+            const probabilities = {
+                THREE_MATCH: three,
+                TWO_MATCH: two,
+                NO_MATCH: none
+            };
+            
+            const spinSpeed = document.getElementById('spin-speed').value;
+            
+            localStorage.setItem('slotProbabilities', JSON.stringify(probabilities));
+            localStorage.setItem('slotSpinSpeed', spinSpeed);
+            
+            if (serverAvailable) {
+                await saveToServer('probabilities', probabilities);
+                await saveToServer('spinSpeed', spinSpeed);
+            }
+            
+            showSuccess();
+        }
+        
+        // Reset settings
+        function resetSettings() {
+            if (!confirm('Reset all settings to default values?')) return;
+            
+            symbols = defaultSymbols.map(s => ({ ...s, image: null }));
+            localStorage.setItem('slotSymbols', JSON.stringify(symbols));
+            localStorage.setItem('slotProbabilities', JSON.stringify({
+                THREE_MATCH: 10,
+                TWO_MATCH: 25,
+                NO_MATCH: 65
+            }));
+            localStorage.setItem('slotSpinSpeed', '2');
+            
+            document.getElementById('three-match').value = 10;
+            document.getElementById('two-match').value = 25;
+            document.getElementById('no-match').value = 65;
+            document.getElementById('spin-speed').value = 2;
+            document.getElementById('speed-value').textContent = '2.0s';
+            
+            renderSymbols();
+            showSuccess();
+        }
+        
+        // Show success message
+        function showSuccess() {
+            const el = document.getElementById('settings-success');
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+        
+        // Background Customization
+        let currentBgOption = 'color';
+        let savedBackgrounds = JSON.parse(localStorage.getItem('slotBackgrounds')) || [];
+        
+        function selectBgOption(option) {
+            currentBgOption = option;
+            
+            // Update active state
+            document.querySelectorAll('.bg-option-card').forEach(card => card.classList.remove('active'));
+            document.getElementById(`bg-${option}-option`).classList.add('active');
+            
+            // Show/hide sections
+            document.getElementById('color-picker-section').style.display = option === 'color' ? 'block' : 'none';
+            document.getElementById('gradient-picker-section').style.display = option === 'gradient' ? 'block' : 'none';
+            document.getElementById('image-upload-section').style.display = option === 'image' ? 'block' : 'none';
+            
+            if (option === 'image') {
+                renderBackgroundPresets();
+            }
+        }
+        
+        async function applyColorBackground() {
+            const color = document.getElementById('bg-color').value;
+            const bgData = {
+                type: 'color',
+                value: color
+            };
+            
+            // Auto-sync background color to Slot Machine Box
+            document.getElementById('slot-box-bg').value = color;
+            
+            await saveBackgroundSetting(bgData);
+            showBgSuccess();
+        }
+        
+        async function applyGradientBackground() {
+            const color1 = document.getElementById('gradient-color1').value;
+            const color2 = document.getElementById('gradient-color2').value;
+            const color3 = document.getElementById('gradient-color3').value;
+            
+            const bgData = {
+                type: 'gradient',
+                value: `linear-gradient(135deg, ${color1} 0%, ${color2} 50%, ${color3} 100%)`
+            };
+            
+            // Auto-sync first gradient color to Slot Machine Box
+            document.getElementById('slot-box-bg').value = color1;
+            
+            await saveBackgroundSetting(bgData);
+            showBgSuccess();
+        }
+
+        async function saveColorPreset() {
+            const name = prompt('Enter a name for this color preset:');
+            if (!name) return;
+
+            const color = document.getElementById('bg-color').value;
+            savedBackgrounds.push({
+                id: Date.now(),
+                name: name,
+                type: 'color',
+                value: color,
+                timestamp: Date.now()
+            });
+            
+            localStorage.setItem('slotBackgrounds', JSON.stringify(savedBackgrounds));
+            if (serverAvailable) {
+                await saveToServer('backgrounds', savedBackgrounds);
+            }
+            
+            renderBackgroundPresets();
+            showBgSuccess();
+        }
+
+        async function saveGradientPreset() {
+            const name = prompt('Enter a name for this gradient preset:');
+            if (!name) return;
+
+            const color1 = document.getElementById('gradient-color1').value;
+            const color2 = document.getElementById('gradient-color2').value;
+            const color3 = document.getElementById('gradient-color3').value;
+            
+            savedBackgrounds.push({
+                id: Date.now(),
+                name: name,
+                type: 'gradient',
+                colors: [color1, color2, color3],
+                timestamp: Date.now()
+            });
+            
+            localStorage.setItem('slotBackgrounds', JSON.stringify(savedBackgrounds));
+            if (serverAvailable) {
+                await saveToServer('backgrounds', savedBackgrounds);
+            }
+            
+            renderBackgroundPresets();
+            showBgSuccess();
+        }
+        
+        async function uploadBackgroundImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async e => {
+                    const imageData = e.target.result;
+                    
+                    // Apply immediately
+                    await saveBackgroundSetting({
+                        type: 'image',
+                        value: imageData
+                    });
+                    
+                    showBgSuccess();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function renderBackgroundPresets() {
+            const grid = document.getElementById('bg-presets-grid');
+            
+            if (savedBackgrounds.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; color: #999; padding: 20px;">
+                        No saved presets yet. Create your first preset above!
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = '';
+            
+            savedBackgrounds.forEach((bg, index) => {
+                const item = document.createElement('div');
+                item.className = 'bg-preset-item';
+                
+                // Preview
+                const preview = document.createElement('div');
+                preview.className = 'bg-preset-preview';
+                if (bg.type === 'color') {
+                    preview.style.background = bg.value;
+                } else if (bg.type === 'gradient') {
+                    preview.style.background = `linear-gradient(135deg, ${bg.colors[0]} 0%, ${bg.colors[1]} 50%, ${bg.colors[2]} 100%)`;
+                } else if (bg.type === 'image') {
+                    preview.style.backgroundImage = `url(${bg.value})`;
+                    preview.style.backgroundSize = 'cover';
+                    preview.style.backgroundPosition = 'center';
+                }
+                item.appendChild(preview);
+                
+                // Name
+                const name = document.createElement('div');
+                name.className = 'bg-preset-name';
+                name.textContent = bg.name || 'Untitled';
+                item.appendChild(name);
+                
+                // Color boxes for gradients
+                if (bg.type === 'gradient') {
+                    const colorsDiv = document.createElement('div');
+                    colorsDiv.className = 'bg-preset-colors';
+                    bg.colors.forEach(color => {
+                        const box = document.createElement('div');
+                        box.className = 'bg-preset-color-box';
+                        box.style.background = color;
+                        box.title = color;
+                        colorsDiv.appendChild(box);
+                    });
+                    item.appendChild(colorsDiv);
+                } else if (bg.type === 'color') {
+                    const colorsDiv = document.createElement('div');
+                    colorsDiv.className = 'bg-preset-colors';
+                    const box = document.createElement('div');
+                    box.className = 'bg-preset-color-box';
+                    box.style.background = bg.value;
+                    box.title = bg.value;
+                    colorsDiv.appendChild(box);
+                    item.appendChild(colorsDiv);
+                }
+                
+                // Actions
+                const actions = document.createElement('div');
+                actions.className = 'bg-preset-actions';
+                
+                const editBtn = document.createElement('button');
+                editBtn.className = 'preset-edit-btn';
+                editBtn.textContent = 'Edit';
+                editBtn.onclick = () => editBackgroundPreset(index);
+                
+                const useBtn = document.createElement('button');
+                useBtn.className = 'preset-use-btn';
+                useBtn.textContent = 'Use';
+                useBtn.onclick = () => selectBackgroundPreset(index);
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'preset-delete-btn';
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.onclick = () => deleteBackgroundPreset(index);
+                
+                actions.appendChild(editBtn);
+                actions.appendChild(useBtn);
+                actions.appendChild(deleteBtn);
+                item.appendChild(actions);
+                
+                grid.appendChild(item);
+            });
+        }
+
+        async function editBackgroundPreset(index) {
+            const bg = savedBackgrounds[index];
+            
+            if (bg.type === 'color') {
+                selectBgOption('color');
+                document.getElementById('bg-color').value = bg.value;
+            } else if (bg.type === 'gradient') {
+                selectBgOption('gradient');
+                document.getElementById('gradient-color1').value = bg.colors[0];
+                document.getElementById('gradient-color2').value = bg.colors[1];
+                document.getElementById('gradient-color3').value = bg.colors[2];
+            }
+
+            const newName = prompt('Edit preset name:', bg.name);
+            if (newName !== null && newName.trim() !== '') {
+                bg.name = newName.trim();
+                localStorage.setItem('slotBackgrounds', JSON.stringify(savedBackgrounds));
+                if (serverAvailable) {
+                    await saveToServer('backgrounds', savedBackgrounds);
+                }
+                renderBackgroundPresets();
+            }
+        }
+        
+        async function selectBackgroundPreset(index) {
+            const bg = savedBackgrounds[index];
+            
+            let bgData;
+            if (bg.type === 'color') {
+                bgData = { type: 'color', value: bg.value };
+                // Auto-sync color preset to Slot Machine Box
+                document.getElementById('slot-box-bg').value = bg.value;
+            } else if (bg.type === 'gradient') {
+                // Convert colors array to gradient value string
+                bgData = { 
+                    type: 'gradient', 
+                    value: `linear-gradient(135deg, ${bg.colors[0]} 0%, ${bg.colors[1]} 50%, ${bg.colors[2]} 100%)`
+                };
+                // Auto-sync first gradient color to Slot Machine Box
+                document.getElementById('slot-box-bg').value = bg.colors[0];
+            } else if (bg.type === 'image') {
+                bgData = { type: 'image', value: bg.value };
+            }
+            
+            await saveBackgroundSetting(bgData);
+            // Auto-apply the color theme after syncing
+            await applyColorTheme();
+            
+            // Refresh color picker inputs to match current theme
+            const currentTheme = JSON.parse(localStorage.getItem('slotColorTheme') || JSON.stringify(defaultColorTheme));
+            document.getElementById('title-color').value = currentTheme.titleColor;
+            document.getElementById('subtitle-color').value = currentTheme.subtitleColor;
+            document.getElementById('prize-box-bg').value = currentTheme.prizeBoxBg;
+            document.getElementById('prize-box-text').value = currentTheme.prizeBoxText;
+            document.getElementById('slot-box-bg').value = currentTheme.slotBoxBg;
+            document.getElementById('reel-bg').value = currentTheme.reelBg;
+            document.getElementById('spin-btn-bg').value = currentTheme.spinBtnBg;
+            document.getElementById('spin-btn-text').value = currentTheme.spinBtnText;
+            document.getElementById('instruction-text').value = currentTheme.instructionText;
+            
+            showBgSuccess();
+        }
+        
+        async function deleteBackgroundPreset(index) {
+            if (!confirm('Delete this preset?')) return;
+            
+            savedBackgrounds.splice(index, 1);
+            localStorage.setItem('slotBackgrounds', JSON.stringify(savedBackgrounds));
+            if (serverAvailable) {
+                await saveToServer('backgrounds', savedBackgrounds);
+            }
+            renderBackgroundPresets();
+        }
+        
+        async function saveBackgroundSetting(bgData) {
+            localStorage.setItem('slotBackground', JSON.stringify(bgData));
+            
+            if (serverAvailable) {
+                await saveToServer('background', bgData);
+            }
+        }
+        
+        function showBgSuccess() {
+            const successMsg = document.getElementById('bg-success');
+            successMsg.classList.add('show');
+            setTimeout(() => successMsg.classList.remove('show'), 3000);
+        }
+
+        // Color Theme Customization Functions
+        let savedColorThemes = [];
+
+        const defaultColorTheme = {
+            titleColor: '#ffed4e',
+            subtitleColor: '#ffffff',
+            prizeBoxBg: '#c084b3',
+            prizeBoxText: '#ffed4e',
+            slotBoxBg: '#e8a0bf',
+            reelBg: '#1a1a2e',
+            spinBtnBg: '#ffed4e',
+            spinBtnText: '#000000',
+            instructionText: '#ffed4e'
+        };
+
+        // Initialize color pickers with saved theme on page load
+        function initializeColorPickers() {
+            const savedTheme = localStorage.getItem('slotColorTheme');
+            const theme = savedTheme ? JSON.parse(savedTheme) : defaultColorTheme;
+            
+            document.getElementById('title-color').value = theme.titleColor || defaultColorTheme.titleColor;
+            document.getElementById('subtitle-color').value = theme.subtitleColor || defaultColorTheme.subtitleColor;
+            document.getElementById('prize-box-bg').value = theme.prizeBoxBg || defaultColorTheme.prizeBoxBg;
+            document.getElementById('prize-box-text').value = theme.prizeBoxText || defaultColorTheme.prizeBoxText;
+            document.getElementById('slot-box-bg').value = theme.slotBoxBg || defaultColorTheme.slotBoxBg;
+            document.getElementById('reel-bg').value = theme.reelBg || defaultColorTheme.reelBg;
+            document.getElementById('spin-btn-bg').value = theme.spinBtnBg || defaultColorTheme.spinBtnBg;
+            document.getElementById('spin-btn-text').value = theme.spinBtnText || defaultColorTheme.spinBtnText;
+            document.getElementById('instruction-text').value = theme.instructionText || defaultColorTheme.instructionText;
+        }
+
+        async function applyColorTheme() {
+            const theme = {
+                titleColor: document.getElementById('title-color').value,
+                subtitleColor: document.getElementById('subtitle-color').value,
+                prizeBoxBg: document.getElementById('prize-box-bg').value,
+                prizeBoxText: document.getElementById('prize-box-text').value,
+                slotBoxBg: document.getElementById('slot-box-bg').value,
+                reelBg: document.getElementById('reel-bg').value,
+                spinBtnBg: document.getElementById('spin-btn-bg').value,
+                spinBtnText: document.getElementById('spin-btn-text').value,
+                instructionText: document.getElementById('instruction-text').value
+            };
+
+            localStorage.setItem('slotColorTheme', JSON.stringify(theme));
+            
+            if (serverAvailable) {
+                await saveToServer('colorTheme', theme);
+            }
+
+            showThemeSuccess();
+        }
+
+        async function saveColorThemePreset() {
+            const name = prompt('Enter a name for this color theme:');
+            if (!name) return;
+
+            const theme = {
+                id: Date.now(),
+                name: name,
+                titleColor: document.getElementById('title-color').value,
+                subtitleColor: document.getElementById('subtitle-color').value,
+                prizeBoxBg: document.getElementById('prize-box-bg').value,
+                prizeBoxText: document.getElementById('prize-box-text').value,
+                slotBoxBg: document.getElementById('slot-box-bg').value,
+                reelBg: document.getElementById('reel-bg').value,
+                spinBtnBg: document.getElementById('spin-btn-bg').value,
+                spinBtnText: document.getElementById('spin-btn-text').value,
+                instructionText: document.getElementById('instruction-text').value,
+                timestamp: Date.now()
+            };
+
+            savedColorThemes.push(theme);
+            localStorage.setItem('slotColorThemes', JSON.stringify(savedColorThemes));
+            
+            if (serverAvailable) {
+                await saveToServer('colorThemes', savedColorThemes);
+            }
+
+            renderColorThemePresets();
+            showThemeSuccess();
+        }
+
+        function resetColorTheme() {
+            document.getElementById('title-color').value = defaultColorTheme.titleColor;
+            document.getElementById('subtitle-color').value = defaultColorTheme.subtitleColor;
+            document.getElementById('prize-box-bg').value = defaultColorTheme.prizeBoxBg;
+            document.getElementById('prize-box-text').value = defaultColorTheme.prizeBoxText;
+            document.getElementById('slot-box-bg').value = defaultColorTheme.slotBoxBg;
+            document.getElementById('reel-bg').value = defaultColorTheme.reelBg;
+            document.getElementById('spin-btn-bg').value = defaultColorTheme.spinBtnBg;
+            document.getElementById('spin-btn-text').value = defaultColorTheme.spinBtnText;
+            document.getElementById('instruction-text').value = defaultColorTheme.instructionText;
+        }
+
+        function renderColorThemePresets() {
+            const grid = document.getElementById('color-theme-presets-grid');
+            
+            if (savedColorThemes.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; color: #999; padding: 20px;">
+                        No saved color themes yet. Create your first theme above!
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = '';
+            
+            savedColorThemes.forEach((theme, index) => {
+                const item = document.createElement('div');
+                item.className = 'bg-preset-item';
+                
+                // Preview with color swatches
+                const preview = document.createElement('div');
+                preview.className = 'bg-preset-preview';
+                preview.style.background = `linear-gradient(135deg, ${theme.titleColor} 0%, ${theme.prizeBoxBg} 50%, ${theme.spinBtnBg} 100%)`;
+                item.appendChild(preview);
+                
+                // Name
+                const name = document.createElement('div');
+                name.className = 'bg-preset-name';
+                name.textContent = theme.name || 'Untitled Theme';
+                item.appendChild(name);
+                
+                // Color boxes showing main colors
+                const colorsDiv = document.createElement('div');
+                colorsDiv.className = 'bg-preset-colors';
+                
+                const mainColors = [theme.titleColor, theme.prizeBoxBg, theme.reelBg || '#1a1a2e', theme.spinBtnBg];
+                mainColors.forEach(color => {
+                    const box = document.createElement('div');
+                    box.className = 'bg-preset-color-box';
+                    box.style.background = color;
+                    box.title = color;
+                    colorsDiv.appendChild(box);
+                });
+                item.appendChild(colorsDiv);
+                
+                // Actions
+                const actions = document.createElement('div');
+                actions.className = 'bg-preset-actions';
+                
+                const editBtn = document.createElement('button');
+                editBtn.className = 'preset-edit-btn';
+                editBtn.textContent = 'Edit';
+                editBtn.onclick = () => editColorThemePreset(index);
+                
+                const useBtn = document.createElement('button');
+                useBtn.className = 'preset-use-btn';
+                useBtn.textContent = 'Use';
+                useBtn.onclick = () => applyColorThemePreset(index);
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'preset-delete-btn';
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.onclick = () => deleteColorThemePreset(index);
+                
+                actions.appendChild(editBtn);
+                actions.appendChild(useBtn);
+                actions.appendChild(deleteBtn);
+                item.appendChild(actions);
+                
+                grid.appendChild(item);
+            });
+        }
+
+        async function editColorThemePreset(index) {
+            const theme = savedColorThemes[index];
+            
+            // Load colors into pickers
+            document.getElementById('title-color').value = theme.titleColor;
+            document.getElementById('subtitle-color').value = theme.subtitleColor;
+            document.getElementById('prize-box-bg').value = theme.prizeBoxBg;
+            document.getElementById('prize-box-text').value = theme.prizeBoxText;
+            document.getElementById('slot-box-bg').value = theme.slotBoxBg;
+            document.getElementById('reel-bg').value = theme.reelBg || '#1a1a2e';
+            document.getElementById('spin-btn-bg').value = theme.spinBtnBg;
+            document.getElementById('spin-btn-text').value = theme.spinBtnText;
+            document.getElementById('instruction-text').value = theme.instructionText;
+
+            const newName = prompt('Edit theme name:', theme.name);
+            if (newName !== null && newName.trim() !== '') {
+                theme.name = newName.trim();
+                localStorage.setItem('slotColorThemes', JSON.stringify(savedColorThemes));
+                if (serverAvailable) {
+                    await saveToServer('colorThemes', savedColorThemes);
+                }
+                renderColorThemePresets();
+            }
+        }
+
+        async function applyColorThemePreset(index) {
+            const theme = savedColorThemes[index];
+            
+            // Apply to local storage and server
+            const themeData = {
+                titleColor: theme.titleColor,
+                subtitleColor: theme.subtitleColor,
+                prizeBoxBg: theme.prizeBoxBg,
+                prizeBoxText: theme.prizeBoxText,
+                slotBoxBg: theme.slotBoxBg,
+                reelBg: theme.reelBg || '#1a1a2e',
+                spinBtnBg: theme.spinBtnBg,
+                spinBtnText: theme.spinBtnText,
+                instructionText: theme.instructionText
+            };
+
+            localStorage.setItem('slotColorTheme', JSON.stringify(themeData));
+            
+            if (serverAvailable) {
+                await saveToServer('colorTheme', themeData);
+            }
+
+            showThemeSuccess();
+        }
+
+        async function deleteColorThemePreset(index) {
+            if (!confirm('Delete this color theme?')) return;
+            
+            savedColorThemes.splice(index, 1);
+            localStorage.setItem('slotColorThemes', JSON.stringify(savedColorThemes));
+            if (serverAvailable) {
+                await saveToServer('colorThemes', savedColorThemes);
+            }
+            renderColorThemePresets();
+        }
+
+        function showThemeSuccess() {
+            const successMsg = document.getElementById('theme-success');
+            successMsg.classList.add('show');
+            setTimeout(() => successMsg.classList.remove('show'), 3000);
+        }
+
+        function loadColorThemePresets() {
+            const stored = localStorage.getItem('slotColorThemes');
+            if (stored) {
+                savedColorThemes = JSON.parse(stored);
+                renderColorThemePresets();
+            }
+
+            // Load current theme into pickers
+            const currentTheme = localStorage.getItem('slotColorTheme');
+            if (currentTheme) {
+                const theme = JSON.parse(currentTheme);
+                document.getElementById('title-color').value = theme.titleColor || defaultColorTheme.titleColor;
+                document.getElementById('subtitle-color').value = theme.subtitleColor || defaultColorTheme.subtitleColor;
+                document.getElementById('prize-box-bg').value = theme.prizeBoxBg || defaultColorTheme.prizeBoxBg;
+                document.getElementById('prize-box-text').value = theme.prizeBoxText || defaultColorTheme.prizeBoxText;
+                document.getElementById('slot-box-bg').value = theme.slotBoxBg || defaultColorTheme.slotBoxBg;
+                document.getElementById('spin-btn-bg').value = theme.spinBtnBg || defaultColorTheme.spinBtnBg;
+                document.getElementById('spin-btn-text').value = theme.spinBtnText || defaultColorTheme.spinBtnText;
+                document.getElementById('instruction-text').value = theme.instructionText || defaultColorTheme.instructionText;
+            }
+        }
+        
+        // Initialize
+        window.onload = async () => {
+            await checkServer();
+            renderSymbols();
+            
+            const probs = JSON.parse(localStorage.getItem('slotProbabilities'));
+            if (probs) {
+                document.getElementById('three-match').value = probs.THREE_MATCH;
+                document.getElementById('two-match').value = probs.TWO_MATCH;
+                document.getElementById('no-match').value = probs.NO_MATCH;
+            }
+            
+            const speed = localStorage.getItem('slotSpinSpeed');
+            if (speed) {
+                document.getElementById('spin-speed').value = speed;
+                document.getElementById('speed-value').textContent = speed + 's';
+            }
+            
+            // Load existing layouts
+            loadLayoutPreviews();
+            
+            // Load saved background presets
+            renderBackgroundPresets();
+            
+            // Load saved color theme presets
+            loadColorThemePresets();
+        };
+
+        
+        // Layout Upload Functions
+        async function uploadLayoutImage(event, type) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64Image = e.target.result;
+                
+                // Save to localStorage
+                localStorage.setItem(`layout-${type}`, base64Image);
+                
+                // Save to server
+                try {
+                    await fetch('/api/save', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            id: `layout-${type}`,
+                            value: base64Image
+                        })
+                    });
+                } catch (e) {
+                    console.log('Server save failed, saved locally');
+                }
+                
+                // Update preview
+                updateLayoutPreview(type, base64Image);
+                
+                // Show success message
+                showSuccessMessage('layout-success');
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function updateLayoutPreview(type, base64Image) {
+            const previewDiv = document.getElementById(`${type}-preview`);
+            const removeBtn = document.getElementById(`remove-${type}-btn`);
+            
+            if (base64Image) {
+                previewDiv.innerHTML = `<img src="${base64Image}" style="max-width: 100%; max-height: 200px; border-radius: 8px;">`;
+                removeBtn.style.display = 'block';
+            } else {
+                previewDiv.innerHTML = '<span style="color: #999;">No layout uploaded</span>';
+                removeBtn.style.display = 'none';
+            }
+        }
+        
+        async function removeLayoutImage(type) {
+            if (!confirm('Remove this layout design?')) return;
+            
+            // Remove from localStorage
+            localStorage.removeItem(`layout-${type}`);
+            
+            // Remove from server
+            try {
+                await fetch('/api/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: `layout-${type}`,
+                        value: null
+                    })
+                });
+            } catch (e) {
+                console.log('Server remove failed, removed locally');
+            }
+            
+            // Update preview
+            updateLayoutPreview(type, null);
+        }
+        
+
+        
+        
+                function loadLayoutPreviews() {
+            // Load legend layout
+            const legendLayout = localStorage.getItem('layout-legend');
+            if (legendLayout) {
+                updateLayoutPreview('legend', legendLayout);
+            }
+            
+            // Load machine layout
+            const machineLayout = localStorage.getItem('layout-machine');
+            if (machineLayout) {
+                updateLayoutPreview('machine', machineLayout);
+            }
+        }
+
+        // Initialize all forms on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeColorPickers();
+            loadLayoutPreviews();
+        });
+
+    </script>
+</body>
+</html>
