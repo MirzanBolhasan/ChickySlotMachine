@@ -1,11 +1,16 @@
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
+const { Pool } = require('pg');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 
 const app = express();
-const db = new sqlite3.Database('./slotmachine.db');
+
+// PostgreSQL connection pool
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+});
 
 app.use(cors());
 
@@ -17,13 +22,19 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(__dirname));
 
 // Initialize Database
-db.serialize(() => {
-    db.run("CREATE TABLE IF NOT EXISTS settings (id TEXT PRIMARY KEY, value TEXT)");
+pool.query(`
+    CREATE TABLE IF NOT EXISTS settings (
+        id TEXT PRIMARY KEY, 
+        value TEXT
+    )
+`).then(() => {
     console.log("Database initialized.");
+}).catch(err => {
+    console.error('Database initialization error:', err);
 });
 
 // API: Save Settings
-app.post('/api/save', (req, res) => {
+app.post('/api/save', async (req, res) => {
     const { id, value } = req.body;
     
     // Convert value to string if it's not already
@@ -34,30 +45,33 @@ app.post('/api/save', (req, res) => {
         valueStr = JSON.stringify(value);
     }
     
-    db.run("INSERT OR REPLACE INTO settings (id, value) VALUES (?, ?)", [id, valueStr], (err) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: err.message });
-        }
+    try {
+        await pool.query(
+            "INSERT INTO settings (id, value) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET value = $2",
+            [id, valueStr]
+        );
         res.json({ status: 'success' });
-    });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // API: Load Settings
-app.get('/api/load/:id', (req, res) => {
+app.get('/api/load/:id', async (req, res) => {
     // Special test endpoint to check if server is available
     if (req.params.id === 'test') {
         return res.json({ status: 'ok' });
     }
     
-    db.get("SELECT value FROM settings WHERE id = ?", [req.params.id], (err, row) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
+    try {
+        const result = await pool.query("SELECT value FROM settings WHERE id = $1", [req.params.id]);
         
-        if (!row) {
+        if (result.rows.length === 0) {
             return res.json(null);
         }
+        
+        const row = result.rows[0];
         
         // Check if the value is a base64 image (starts with data:image)
         if (row.value && row.value.startsWith('data:image')) {
@@ -73,7 +87,9 @@ app.get('/api/load/:id', (req, res) => {
             // If parsing fails, return the raw string
             res.json(row.value);
         }
-    });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 const PORT = process.env.PORT || 3000;

@@ -168,6 +168,77 @@
             font-size: 28px;
         }
         
+        /* Sound option card */
+        .sound-option {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .sound-option:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        
+        .sound-option.selected {
+            background: #667eea;
+            border-color: #667eea;
+        }
+        
+        .sound-option.selected .option-name,
+        .sound-option.selected .option-description {
+            color: white;
+        }
+        
+        .option-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .option-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .badge {
+            background: #ffd700;
+            color: #333;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .option-description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        
+        .play-btn-small {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .play-btn-small:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
         /* Symbols grid */
         .symbols-grid {
             display: grid;
@@ -223,11 +294,9 @@
             border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
-            color: #2d3436;
-            margin-bottom: 12px;
+            font-family: 'Poppins', sans-serif;
             text-align: center;
-            transition: border-color 0.2s;
-            background: white;
+            transition: border 0.2s;
         }
         
         .symbol-name-input:focus {
@@ -235,252 +304,118 @@
             border-color: #667eea;
         }
         
-        .upload-btn {
-            width: 100%;
-            padding: 10px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        .symbol-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .icon-btn {
+            flex: 1;
+            padding: 8px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            font-size: 12px;
             font-weight: 600;
-            font-size: 13px;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
         
-        .upload-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        .icon-btn.upload {
+            background: #3498db;
+            color: white;
         }
         
-        /* Form controls */
+        .icon-btn.upload:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .icon-btn.delete {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .icon-btn.delete:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        /* Forms */
         .form-group {
             margin-bottom: 24px;
         }
         
         .form-group label {
             display: block;
-            font-size: 15px;
             font-weight: 600;
             color: #2d3436;
-            margin-bottom: 10px;
-        }
-        
-        .form-group input[type="number"],
-        .form-group input[type="range"] {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e1e8ed;
-            border-radius: 10px;
+            margin-bottom: 12px;
             font-size: 15px;
-            font-family: inherit;
-            transition: all 0.3s;
-            background: #f8f9fa;
         }
         
-        .form-group input[type="number"]:focus {
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, #667eea, #764ba2);
             outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            -webkit-appearance: none;
         }
         
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            border: none;
         }
         
         .range-value {
             display: inline-block;
-            margin-left: 12px;
-            font-weight: 700;
-            color: #667eea;
-            font-size: 16px;
-        }
-        
-        .error-message {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 14px 20px;
-            border-radius: 10px;
-            margin-top: 12px;
-            font-weight: 600;
-            display: none;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .error-message.show {
-            display: flex;
-            animation: shake 0.5s;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
         }
         
         .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
             background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
             color: white;
-            padding: 14px 20px;
-            border-radius: 10px;
-            margin-top: 12px;
-            font-weight: 600;
-            display: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3);
+            display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
         }
         
         .success-message.show {
-            display: flex;
-            animation: slideDown 0.4s ease-out;
-        }
-        
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Background Customization */
-        .bg-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 24px;
-        }
-        
-        .bg-option-card {
-            background: #f8f9fa;
-            border: 2px solid #e1e8ed;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .bg-option-card:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-        }
-        
-        .bg-option-card.active {
-            border-color: #667eea;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-        }
-        
-        .color-picker-wrapper {
-            margin: 20px 0;
-        }
-        
-        .color-picker-wrapper input[type="color"] {
-            width: 100%;
-            height: 60px;
-            border: 2px solid #e1e8ed;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        
-        .bg-preset-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 16px;
-            margin-top: 16px;
-        }
-        
-        .bg-preset-item {
-            background: white;
-            border: 2px solid #e1e8ed;
-            border-radius: 12px;
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .bg-preset-item:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-        }
-        
-        .bg-preset-preview {
-            height: 100px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            border: 1px solid rgba(0,0,0,0.1);
-        }
-
-        .bg-preset-name {
-            font-weight: 600;
-            font-size: 14px;
-            color: #2d3436;
-            margin-bottom: 8px;
-        }
-
-        .bg-preset-colors {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 12px;
-        }
-
-        .bg-preset-color-box {
-            flex: 1;
-            height: 30px;
-            border-radius: 6px;
-            border: 1px solid rgba(0,0,0,0.1);
-        }
-
-        .bg-preset-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .bg-preset-actions button {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .preset-edit-btn {
-            background: #667eea;
-            color: white;
-        }
-
-        .preset-edit-btn:hover {
-            background: #5568d3;
-        }
-
-        .preset-use-btn {
-            background: #00b894;
-            color: white;
-        }
-
-        .preset-use-btn:hover {
-            background: #00a085;
-        }
-        
-        .preset-delete-btn {
-            background: #ff6b6b;
-            color: white;
-        }
-        
-        .preset-delete-btn:hover {
-            background: #ee5a6f;
+            opacity: 1;
+            transform: translateY(0);
         }
         
         /* Animations */
@@ -500,103 +435,221 @@
             }
         }
         
-        /* Responsive */
-        @media (max-width: 768px) {
-            .symbols-grid {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-                gap: 16px;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
+        input[type="file"] {
+            display: none;
         }
 
-        @media (max-width: 768px) {
-            body {
-                padding: 20px 10px;
-                padding-top: max(20px, env(safe-area-inset-top));
-                padding-bottom: max(20px, env(safe-area-inset-bottom));
-            }
-            
-            .card {
-                padding: 24px 16px;
-            }
-            
-            header {
-                margin-bottom: 32px;
-            }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 50px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: border 0.2s;
+        }
+
+        input[type="color"]:hover {
+            border-color: #667eea;
+        }
+
+        .bg-type-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .bg-type-btn {
+            flex: 1;
+            padding: 12px 20px;
+            background: white;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #2d3436;
+        }
+
+        .bg-type-btn:hover {
+            border-color: #cbd5e0;
+        }
+
+        .bg-type-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .bg-preset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .bg-preset-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid #e1e8ed;
+            height: 120px;
+        }
+
+        .bg-preset-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .bg-preset-preview {
+            width: 100%;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bg-preset-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .bg-preset-name {
+            padding: 8px;
+            background: white;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #2d3436;
+        }
+
+        .bg-preset-actions {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .bg-preset-item:hover .bg-preset-actions {
+            opacity: 1;
+        }
+
+        .preset-action-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .preset-action-btn.edit {
+            background: #3498db;
+            color: white;
+        }
+
+        .preset-action-btn.use {
+            background: #00b894;
+            color: white;
+        }
+
+        .preset-action-btn.delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .preset-action-btn:hover {
+            transform: scale(1.1);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🎰 <span class="text-gradient">Event Slot Machine Settings</span></h1>
-            <p class="subtitle">Configure your lucky spin experience</p>
+            <h1>🎰 <span class="text-gradient">Admin Panel</span></h1>
+            <p class="subtitle">Manage your slot machine symbols, odds, and settings</p>
         </header>
         
-        <div class="status" id="status">
-            <span class="status-dot"></span>
-            <span>Checking connection...</span>
-        </div>
-        
         <div class="nav">
-            <a href="spintest_event.html" class="btn btn-primary">
-                <span>🎮</span> Open Slot Machine
+            <a href="spintest_modern.html" class="btn btn-primary">
+                <span>🎮</span> View Slot Machine
             </a>
-            <button class="btn btn-secondary" onclick="resetSettings()">
-                <span>🔄</span> Reset to Defaults
+            <button class="btn btn-secondary" onclick="location.reload()">
+                <span>🔄</span> Refresh
             </button>
         </div>
         
-        <!-- Symbols Section -->
+        <div id="server-status" class="status offline">
+            <span class="status-dot"></span>
+            <span>Checking server...</span>
+        </div>
+        
+        <!-- Symbol Management -->
         <div class="card">
             <h2>
                 <span class="card-icon">🎨</span>
-                Prize Symbols
+                Slot Symbols
             </h2>
             <div class="symbols-grid" id="symbols-grid"></div>
         </div>
         
-        <!-- Probabilities Section -->
+        <!-- Winning Probabilities -->
         <div class="card">
             <h2>
-                <span class="card-icon">🎲</span>
+                <span class="card-icon">🎰</span>
                 Win Probabilities
             </h2>
-            <p style="color: #636e72; margin-bottom: 24px;">Set the chance for each outcome. Total must equal 100%</p>
+            <p style="color: #636e72; margin-bottom: 24px; font-size: 15px;">Set the chance for each outcome. Total must equal 100%</p>
             
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>🏆 Jackpot (3 Match) %</label>
-                    <input type="number" id="three-match" value="10" min="0" max="100" step="0.1">
+            <div class="form-grid" style="grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 24px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="font-size: 14px; margin-bottom: 8px;">🏆 Jackpot (3 Match) %</label>
+                    <input type="number" id="three-match" min="0" max="100" value="10" 
+                           style="width: 100%; padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px; font-size: 16px; font-family: 'Poppins', sans-serif; text-align: left;"
+                           oninput="updateProbabilities()">
                 </div>
-                <div class="form-group">
-                    <label>🎁 Win (2 Match) %</label>
-                    <input type="number" id="two-match" value="25" min="0" max="100" step="0.1">
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="font-size: 14px; margin-bottom: 8px;">🎁 Win (2 Match) %</label>
+                    <input type="number" id="two-match" min="0" max="100" value="25" 
+                           style="width: 100%; padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px; font-size: 16px; font-family: 'Poppins', sans-serif; text-align: left;"
+                           oninput="updateProbabilities()">
                 </div>
-                <div class="form-group">
-                    <label>🎫 Consolation (No Match) %</label>
-                    <input type="number" id="no-match" value="65" min="0" max="100" step="0.1">
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="font-size: 14px; margin-bottom: 8px;">🎫 Consolation (No Match) %</label>
+                    <input type="number" id="no-match" min="0" max="100" value="65" 
+                           style="width: 100%; padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px; font-size: 16px; font-family: 'Poppins', sans-serif; text-align: left;"
+                           oninput="updateProbabilities()">
                 </div>
             </div>
             
-            <div class="error-message" id="prob-error">
-                <span>⚠️</span>
-                <span>Probabilities must add up to 100%!</span>
+            <div id="probability-warning" style="display: none; background: #fff3cd; border: 2px solid #ffc107; color: #856404; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; font-weight: 600;">
+                ⚠️ Total must equal 100%! Current total: <span id="total-percentage">100</span>%
             </div>
             
-            <button class="btn btn-primary" onclick="saveSettings()" style="margin-top: 20px;">
+            <button class="btn btn-primary" onclick="saveSettings()">
                 <span>💾</span> Save Probabilities
             </button>
-            <div class="success-message" id="settings-success">
-                <span>✓</span>
-                <span>Settings saved successfully!</span>
-            </div>
         </div>
         
-        <!-- Animation Settings -->
+        <!-- Spin Animation Speed -->
         <div class="card">
             <h2>
                 <span class="card-icon">⚡</span>
@@ -612,6 +665,62 @@
             
             <button class="btn btn-primary" onclick="saveSettings()">
                 <span>💾</span> Save Animation Speed
+            </button>
+        </div>
+
+        <!-- Spin Sound Selection - NEW FEATURE -->
+        <div class="card">
+            <h2>
+                <span class="card-icon">🔊</span>
+                Spin Sound Effect
+            </h2>
+            <p style="color: #636e72; margin-bottom: 24px;">Choose the sound effect that plays during spinning</p>
+            
+            <div id="sound-options">
+                <div class="sound-option" data-sound="1" onclick="selectSound(1)">
+                    <div class="option-header">
+                        <span class="option-name">🎵 Rapid Ticking</span>
+                        <span class="badge">CLASSIC</span>
+                    </div>
+                    <p class="option-description">Fast clicking sounds that slow down as the reels stop</p>
+                    <button class="play-btn-small" onclick="event.stopPropagation(); previewSound(1)">▶ Preview</button>
+                </div>
+                
+                <div class="sound-option" data-sound="2" onclick="selectSound(2)">
+                    <div class="option-header">
+                        <span class="option-name">🌀 Smooth Whooshing</span>
+                    </div>
+                    <p class="option-description">Wheel-like spinning sound that gradually slows</p>
+                    <button class="play-btn-small" onclick="event.stopPropagation(); previewSound(2)">▶ Preview</button>
+                </div>
+                
+                <div class="sound-option" data-sound="3" onclick="selectSound(3)">
+                    <div class="option-header">
+                        <span class="option-name">⚙️ Mechanical Clicking</span>
+                    </div>
+                    <p class="option-description">Ratchet-like mechanical clicks</p>
+                    <button class="play-btn-small" onclick="event.stopPropagation(); previewSound(3)">▶ Preview</button>
+                </div>
+                
+                <div class="sound-option" data-sound="4" onclick="selectSound(4)">
+                    <div class="option-header">
+                        <span class="option-name">🎮 Electronic Beeping</span>
+                    </div>
+                    <p class="option-description">Arcade-style musical beeps</p>
+                    <button class="play-btn-small" onclick="event.stopPropagation(); previewSound(4)">▶ Preview</button>
+                </div>
+                
+                <div class="sound-option" data-sound="5" onclick="selectSound(5)">
+                    <div class="option-header">
+                        <span class="option-name">🥁 Drum Roll</span>
+                    </div>
+                    <p class="option-description">Building tension with drum roll effect</p>
+                    <button class="play-btn-small" onclick="event.stopPropagation(); previewSound(5)">▶ Preview</button>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="saveSoundSettings()" style="margin-top: 16px;">
+                <span>💾</span> Save Sound Selection
             </button>
         </div>
         
@@ -658,45 +767,36 @@
                 </div>
             </div>
             
-            <div class="alert" style="background: #e3f2fd; color: #1976d2; padding: 16px; border-radius: 12px; margin-top: 16px;">
-                <strong>💡 Tip:</strong> Upload transparent PNG images for best results. The layout will overlay on the existing sections.
-            </div>
-            
             <div class="success-message" id="layout-success">
                 <span>✓</span>
-                <span>Layout uploaded successfully!</span>
+                <span>Layout saved successfully!</span>
             </div>
         </div>
 
-        <!-- Theme & Appearance Customization -->
+        <!-- Background Customization -->
         <div class="card">
             <h2>
-                <span class="card-icon">🎨</span>
-                Theme & Appearance Customization
+                <span class="card-icon">🖼️</span>
+                Background Design
             </h2>
-            <p style="color: #636e72; margin-bottom: 24px;">Customize background and all colors in one place</p>
+            <p style="color: #636e72; margin-bottom: 24px;">Customize the background appearance</p>
             
-            <!-- Background Section -->
-            <div style="margin-bottom: 32px; padding-bottom: 32px; border-bottom: 2px solid #e1e8ed;">
-                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">🖼️ Background Options</h3>
-                <div class="bg-options">
-                    <div class="bg-option-card" id="bg-color-option" onclick="selectBgOption('color')">
-                        <div style="font-size: 48px; margin-bottom: 12px;">🎨</div>
-                        <div style="font-weight: 600;">Solid Color</div>
-                    </div>
-                    <div class="bg-option-card" id="bg-gradient-option" onclick="selectBgOption('gradient')">
-                        <div style="font-size: 48px; margin-bottom: 12px;">🌈</div>
-                        <div style="font-weight: 600;">Gradient</div>
-                    </div>
-                    <div class="bg-option-card" id="bg-image-option" onclick="selectBgOption('image')">
-                        <div style="font-size: 48px; margin-bottom: 12px;">🖼️</div>
-                        <div style="font-weight: 600;">Upload Image</div>
-                    </div>
-                </div>
-                
+            <div class="bg-type-selector">
+                <button class="bg-type-btn active" onclick="showBgSection('color')">
+                    🎨 Solid Color
+                </button>
+                <button class="bg-type-btn" onclick="showBgSection('gradient')">
+                    🌈 Gradient
+                </button>
+                <button class="bg-type-btn" onclick="showBgSection('image')">
+                    🖼️ Image
+                </button>
+            </div>
+            
+            <div id="bg-sections">
                 <!-- Color Picker -->
-                <div id="color-picker-section" style="display: none; margin-top: 16px;">
-                    <div class="color-picker-wrapper">
+                <div id="color-picker-section">
+                    <div class="form-group" style="margin-bottom: 16px;">
                         <label style="font-weight: 600; margin-bottom: 8px; display: block;">Choose Background Color</label>
                         <input type="color" id="bg-color" value="#1a1a2e">
                     </div>
@@ -848,518 +948,11 @@
     </div>
 
     <script>
-        const defaultSymbols = [
-            { name: 'Cherry', emoji: '🍒' },
-            { name: 'Seven', emoji: '7️⃣' },
-            { name: 'Lemon', emoji: '🍋' },
-            { name: 'Orange', emoji: '🍊' },
-            { name: 'Star', emoji: '⭐' },
-            { name: 'Diamond', emoji: '💎' },
-            { name: 'Bell', emoji: '🔔' },
-            { name: 'Clover', emoji: '🍀' }
-        ];
-        
-        // Dynamic server URL detection
-        const SERVER_URLS = [
-            'http://192.168.50.146:3000',
-            'http://localhost:3000',
-            window.location.origin
-        ];
-        
-        async function fetchFromServer(endpoint, options = {}) {
-            for (const baseUrl of SERVER_URLS) {
-                try {
-                    console.log(`Trying: ${baseUrl}${endpoint}`);
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 3000);
-                    
-                    const res = await fetch(`${baseUrl}${endpoint}`, {
-                        ...options,
-                        signal: controller.signal
-                    });
-                    
-                    clearTimeout(timeoutId);
-                    
-                    if (res.ok) {
-                        console.log(`✓ Connected to ${baseUrl}`);
-                        return await res.json();
-                    }
-                } catch (e) {
-                    console.log(`✗ Failed ${baseUrl}: ${e.message}`);
-                }
-            }
-            return null;
-        }
-        
-        async function saveToServer(id, value) {
-            for (const baseUrl of SERVER_URLS) {
-                try {
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 3000);
-                    
-                    const res = await fetch(`${baseUrl}/api/save`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id, value }),
-                        signal: controller.signal
-                    });
-                    
-                    clearTimeout(timeoutId);
-                    
-                    if (res.ok) {
-                        console.log(`Saved ${id} to ${baseUrl}`);
-                        return true;
-                    }
-                } catch (e) {
-                    console.log(`Failed to save to ${baseUrl}: ${e.message}`);
-                }
-            }
-            return false;
-        }
-        
+        let symbols = [];
         let serverAvailable = false;
-        
-        let symbols = JSON.parse(localStorage.getItem('slotSymbols')) || 
-                     defaultSymbols.map(s => ({ ...s, image: null }));
-        
-        // Check server status
-        async function checkServer() {
-            const result = await fetchFromServer('/api/load/test');
-            if (result !== null) {
-                serverAvailable = true;
-                document.getElementById('status').className = 'status online';
-                document.getElementById('status').innerHTML = '<span class="status-dot"></span><span>Connected to server</span>';
-            } else {
-                serverAvailable = false;
-                document.getElementById('status').className = 'status offline';
-                document.getElementById('status').innerHTML = '<span class="status-dot"></span><span>Using local storage only</span>';
-            }
-        }
-        // Render symbols
-        function renderSymbols() {
-            const grid = document.getElementById('symbols-grid');
-            grid.innerHTML = '';
-            
-            symbols.forEach((s, i) => {
-                const card = document.createElement('div');
-                card.className = 'symbol-card';
-                card.innerHTML = `
-                    <div class="symbol-preview">
-                        ${s.image ? `<img src="${s.image}" alt="${s.name}">` : s.emoji}
-                    </div>
-                    <input type="text" class="symbol-name-input" 
-                           value="${s.name}" 
-                           onchange="updateSymbolName(${i}, this.value)"
-                           placeholder="Symbol Name">
-                    <button class="upload-btn" onclick="document.getElementById('upload-${i}').click()">
-                        📤 ${s.image ? 'Change' : 'Upload'} Image
-                    </button>
-                    <input type="file" id="upload-${i}" style="display:none" 
-                           accept="image/*" onchange="uploadSymbol(${i}, event)">
-                    ${s.image ? `<button class="upload-btn" style="background: #ff6b6b; margin-top: 8px;" onclick="resetSymbol(${i})">Reset to Emoji</button>` : ''}
-                `;
-                grid.appendChild(card);
-            });
-        }
-        
-        // Upload symbol
-        async function uploadSymbol(index, event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = async e => {
-                    symbols[index].image = e.target.result;
-                    localStorage.setItem('slotSymbols', JSON.stringify(symbols));
-                    
-                    if (serverAvailable) {
-                        await saveToServer('symbols', symbols);
-                    }
-                    
-                    renderSymbols();
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-        
-        // Reset symbol to emoji
-        function resetSymbol(index) {
-            symbols[index].image = null;
-            localStorage.setItem('slotSymbols', JSON.stringify(symbols));
-            renderSymbols();
-        }
-        
-        // Update symbol name
-        async function updateSymbolName(index, newName) {
-            if (newName.trim()) {
-                symbols[index].name = newName.trim();
-                localStorage.setItem('slotSymbols', JSON.stringify(symbols));
-                
-                if (serverAvailable) {
-                    await saveToServer('symbols', symbols);
-                }
-            }
-        }
-        
-        // Save settings
-        async function saveSettings() {
-            const three = parseFloat(document.getElementById('three-match').value);
-            const two = parseFloat(document.getElementById('two-match').value);
-            const none = parseFloat(document.getElementById('no-match').value);
-            
-            const errorEl = document.getElementById('prob-error');
-            if (Math.abs((three + two + none) - 100) > 0.01) {
-                errorEl.classList.add('show');
-                setTimeout(() => errorEl.classList.remove('show'), 3000);
-                return;
-            }
-            errorEl.classList.remove('show');
-            
-            const probabilities = {
-                THREE_MATCH: three,
-                TWO_MATCH: two,
-                NO_MATCH: none
-            };
-            
-            const spinSpeed = document.getElementById('spin-speed').value;
-            
-            localStorage.setItem('slotProbabilities', JSON.stringify(probabilities));
-            localStorage.setItem('slotSpinSpeed', spinSpeed);
-            
-            if (serverAvailable) {
-                await saveToServer('probabilities', probabilities);
-                await saveToServer('spinSpeed', spinSpeed);
-            }
-            
-            showSuccess();
-        }
-        
-        // Reset settings
-        function resetSettings() {
-            if (!confirm('Reset all settings to default values?')) return;
-            
-            symbols = defaultSymbols.map(s => ({ ...s, image: null }));
-            localStorage.setItem('slotSymbols', JSON.stringify(symbols));
-            localStorage.setItem('slotProbabilities', JSON.stringify({
-                THREE_MATCH: 10,
-                TWO_MATCH: 25,
-                NO_MATCH: 65
-            }));
-            localStorage.setItem('slotSpinSpeed', '2');
-            
-            document.getElementById('three-match').value = 10;
-            document.getElementById('two-match').value = 25;
-            document.getElementById('no-match').value = 65;
-            document.getElementById('spin-speed').value = 2;
-            document.getElementById('speed-value').textContent = '2.0s';
-            
-            renderSymbols();
-            showSuccess();
-        }
-        
-        // Show success message
-        function showSuccess() {
-            const el = document.getElementById('settings-success');
-            el.classList.add('show');
-            setTimeout(() => el.classList.remove('show'), 3000);
-        }
-        
-        // Background Customization
-        let currentBgOption = 'color';
-        let savedBackgrounds = JSON.parse(localStorage.getItem('slotBackgrounds')) || [];
-        
-        function selectBgOption(option) {
-            currentBgOption = option;
-            
-            // Update active state
-            document.querySelectorAll('.bg-option-card').forEach(card => card.classList.remove('active'));
-            document.getElementById(`bg-${option}-option`).classList.add('active');
-            
-            // Show/hide sections
-            document.getElementById('color-picker-section').style.display = option === 'color' ? 'block' : 'none';
-            document.getElementById('gradient-picker-section').style.display = option === 'gradient' ? 'block' : 'none';
-            document.getElementById('image-upload-section').style.display = option === 'image' ? 'block' : 'none';
-            
-            if (option === 'image') {
-                renderBackgroundPresets();
-            }
-        }
-        
-        async function applyColorBackground() {
-            const color = document.getElementById('bg-color').value;
-            const bgData = {
-                type: 'color',
-                value: color
-            };
-            
-            // Auto-sync background color to Slot Machine Box
-            document.getElementById('slot-box-bg').value = color;
-            
-            await saveBackgroundSetting(bgData);
-            showBgSuccess();
-        }
-        
-        async function applyGradientBackground() {
-            const color1 = document.getElementById('gradient-color1').value;
-            const color2 = document.getElementById('gradient-color2').value;
-            const color3 = document.getElementById('gradient-color3').value;
-            
-            const bgData = {
-                type: 'gradient',
-                value: `linear-gradient(135deg, ${color1} 0%, ${color2} 50%, ${color3} 100%)`
-            };
-            
-            // Auto-sync first gradient color to Slot Machine Box
-            document.getElementById('slot-box-bg').value = color1;
-            
-            await saveBackgroundSetting(bgData);
-            showBgSuccess();
-        }
-
-        async function saveColorPreset() {
-            const name = prompt('Enter a name for this color preset:');
-            if (!name) return;
-
-            const color = document.getElementById('bg-color').value;
-            savedBackgrounds.push({
-                id: Date.now(),
-                name: name,
-                type: 'color',
-                value: color,
-                timestamp: Date.now()
-            });
-            
-            localStorage.setItem('slotBackgrounds', JSON.stringify(savedBackgrounds));
-            if (serverAvailable) {
-                await saveToServer('backgrounds', savedBackgrounds);
-            }
-            
-            renderBackgroundPresets();
-            showBgSuccess();
-        }
-
-        async function saveGradientPreset() {
-            const name = prompt('Enter a name for this gradient preset:');
-            if (!name) return;
-
-            const color1 = document.getElementById('gradient-color1').value;
-            const color2 = document.getElementById('gradient-color2').value;
-            const color3 = document.getElementById('gradient-color3').value;
-            
-            savedBackgrounds.push({
-                id: Date.now(),
-                name: name,
-                type: 'gradient',
-                colors: [color1, color2, color3],
-                timestamp: Date.now()
-            });
-            
-            localStorage.setItem('slotBackgrounds', JSON.stringify(savedBackgrounds));
-            if (serverAvailable) {
-                await saveToServer('backgrounds', savedBackgrounds);
-            }
-            
-            renderBackgroundPresets();
-            showBgSuccess();
-        }
-        
-        async function uploadBackgroundImage(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = async e => {
-                    const imageData = e.target.result;
-                    
-                    // Apply immediately
-                    await saveBackgroundSetting({
-                        type: 'image',
-                        value: imageData
-                    });
-                    
-                    showBgSuccess();
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-        
-        function renderBackgroundPresets() {
-            const grid = document.getElementById('bg-presets-grid');
-            
-            if (savedBackgrounds.length === 0) {
-                grid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; color: #999; padding: 20px;">
-                        No saved presets yet. Create your first preset above!
-                    </div>
-                `;
-                return;
-            }
-            
-            grid.innerHTML = '';
-            
-            savedBackgrounds.forEach((bg, index) => {
-                const item = document.createElement('div');
-                item.className = 'bg-preset-item';
-                
-                // Preview
-                const preview = document.createElement('div');
-                preview.className = 'bg-preset-preview';
-                if (bg.type === 'color') {
-                    preview.style.background = bg.value;
-                } else if (bg.type === 'gradient') {
-                    preview.style.background = `linear-gradient(135deg, ${bg.colors[0]} 0%, ${bg.colors[1]} 50%, ${bg.colors[2]} 100%)`;
-                } else if (bg.type === 'image') {
-                    preview.style.backgroundImage = `url(${bg.value})`;
-                    preview.style.backgroundSize = 'cover';
-                    preview.style.backgroundPosition = 'center';
-                }
-                item.appendChild(preview);
-                
-                // Name
-                const name = document.createElement('div');
-                name.className = 'bg-preset-name';
-                name.textContent = bg.name || 'Untitled';
-                item.appendChild(name);
-                
-                // Color boxes for gradients
-                if (bg.type === 'gradient') {
-                    const colorsDiv = document.createElement('div');
-                    colorsDiv.className = 'bg-preset-colors';
-                    bg.colors.forEach(color => {
-                        const box = document.createElement('div');
-                        box.className = 'bg-preset-color-box';
-                        box.style.background = color;
-                        box.title = color;
-                        colorsDiv.appendChild(box);
-                    });
-                    item.appendChild(colorsDiv);
-                } else if (bg.type === 'color') {
-                    const colorsDiv = document.createElement('div');
-                    colorsDiv.className = 'bg-preset-colors';
-                    const box = document.createElement('div');
-                    box.className = 'bg-preset-color-box';
-                    box.style.background = bg.value;
-                    box.title = bg.value;
-                    colorsDiv.appendChild(box);
-                    item.appendChild(colorsDiv);
-                }
-                
-                // Actions
-                const actions = document.createElement('div');
-                actions.className = 'bg-preset-actions';
-                
-                const editBtn = document.createElement('button');
-                editBtn.className = 'preset-edit-btn';
-                editBtn.textContent = 'Edit';
-                editBtn.onclick = () => editBackgroundPreset(index);
-                
-                const useBtn = document.createElement('button');
-                useBtn.className = 'preset-use-btn';
-                useBtn.textContent = 'Use';
-                useBtn.onclick = () => selectBackgroundPreset(index);
-                
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'preset-delete-btn';
-                deleteBtn.textContent = 'Delete';
-                deleteBtn.onclick = () => deleteBackgroundPreset(index);
-                
-                actions.appendChild(editBtn);
-                actions.appendChild(useBtn);
-                actions.appendChild(deleteBtn);
-                item.appendChild(actions);
-                
-                grid.appendChild(item);
-            });
-        }
-
-        async function editBackgroundPreset(index) {
-            const bg = savedBackgrounds[index];
-            
-            if (bg.type === 'color') {
-                selectBgOption('color');
-                document.getElementById('bg-color').value = bg.value;
-            } else if (bg.type === 'gradient') {
-                selectBgOption('gradient');
-                document.getElementById('gradient-color1').value = bg.colors[0];
-                document.getElementById('gradient-color2').value = bg.colors[1];
-                document.getElementById('gradient-color3').value = bg.colors[2];
-            }
-
-            const newName = prompt('Edit preset name:', bg.name);
-            if (newName !== null && newName.trim() !== '') {
-                bg.name = newName.trim();
-                localStorage.setItem('slotBackgrounds', JSON.stringify(savedBackgrounds));
-                if (serverAvailable) {
-                    await saveToServer('backgrounds', savedBackgrounds);
-                }
-                renderBackgroundPresets();
-            }
-        }
-        
-        async function selectBackgroundPreset(index) {
-            const bg = savedBackgrounds[index];
-            
-            let bgData;
-            if (bg.type === 'color') {
-                bgData = { type: 'color', value: bg.value };
-                // Auto-sync color preset to Slot Machine Box
-                document.getElementById('slot-box-bg').value = bg.value;
-            } else if (bg.type === 'gradient') {
-                // Convert colors array to gradient value string
-                bgData = { 
-                    type: 'gradient', 
-                    value: `linear-gradient(135deg, ${bg.colors[0]} 0%, ${bg.colors[1]} 50%, ${bg.colors[2]} 100%)`
-                };
-                // Auto-sync first gradient color to Slot Machine Box
-                document.getElementById('slot-box-bg').value = bg.colors[0];
-            } else if (bg.type === 'image') {
-                bgData = { type: 'image', value: bg.value };
-            }
-            
-            await saveBackgroundSetting(bgData);
-            // Auto-apply the color theme after syncing
-            await applyColorTheme();
-            
-            // Refresh color picker inputs to match current theme
-            const currentTheme = JSON.parse(localStorage.getItem('slotColorTheme') || JSON.stringify(defaultColorTheme));
-            document.getElementById('title-color').value = currentTheme.titleColor;
-            document.getElementById('subtitle-color').value = currentTheme.subtitleColor;
-            document.getElementById('prize-box-bg').value = currentTheme.prizeBoxBg;
-            document.getElementById('prize-box-text').value = currentTheme.prizeBoxText;
-            document.getElementById('slot-box-bg').value = currentTheme.slotBoxBg;
-            document.getElementById('reel-bg').value = currentTheme.reelBg;
-            document.getElementById('spin-btn-bg').value = currentTheme.spinBtnBg;
-            document.getElementById('spin-btn-text').value = currentTheme.spinBtnText;
-            document.getElementById('instruction-text').value = currentTheme.instructionText;
-            
-            showBgSuccess();
-        }
-        
-        async function deleteBackgroundPreset(index) {
-            if (!confirm('Delete this preset?')) return;
-            
-            savedBackgrounds.splice(index, 1);
-            localStorage.setItem('slotBackgrounds', JSON.stringify(savedBackgrounds));
-            if (serverAvailable) {
-                await saveToServer('backgrounds', savedBackgrounds);
-            }
-            renderBackgroundPresets();
-        }
-        
-        async function saveBackgroundSetting(bgData) {
-            localStorage.setItem('slotBackground', JSON.stringify(bgData));
-            
-            if (serverAvailable) {
-                await saveToServer('background', bgData);
-            }
-        }
-        
-        function showBgSuccess() {
-            const successMsg = document.getElementById('bg-success');
-            successMsg.classList.add('show');
-            setTimeout(() => successMsg.classList.remove('show'), 3000);
-        }
-
-        // Color Theme Customization Functions
+        let savedBackgroundPresets = [];
         let savedColorThemes = [];
+        let selectedSoundOption = 1; // Default to option 1
 
         const defaultColorTheme = {
             titleColor: '#ffed4e',
@@ -1373,24 +966,617 @@
             instructionText: '#ffed4e'
         };
 
-        // Initialize color pickers with saved theme on page load
-        function initializeColorPickers() {
-            const savedTheme = localStorage.getItem('slotColorTheme');
-            const theme = savedTheme ? JSON.parse(savedTheme) : defaultColorTheme;
-            
-            document.getElementById('title-color').value = theme.titleColor || defaultColorTheme.titleColor;
-            document.getElementById('subtitle-color').value = theme.subtitleColor || defaultColorTheme.subtitleColor;
-            document.getElementById('prize-box-bg').value = theme.prizeBoxBg || defaultColorTheme.prizeBoxBg;
-            document.getElementById('prize-box-text').value = theme.prizeBoxText || defaultColorTheme.prizeBoxText;
-            document.getElementById('slot-box-bg').value = theme.slotBoxBg || defaultColorTheme.slotBoxBg;
-            document.getElementById('reel-bg').value = theme.reelBg || defaultColorTheme.reelBg;
-            document.getElementById('spin-btn-bg').value = theme.spinBtnBg || defaultColorTheme.spinBtnBg;
-            document.getElementById('spin-btn-text').value = theme.spinBtnText || defaultColorTheme.spinBtnText;
-            document.getElementById('instruction-text').value = theme.instructionText || defaultColorTheme.instructionText;
+        // Initialize symbols array
+        function initSymbols() {
+            const saved = JSON.parse(localStorage.getItem('slotSymbols')) || [];
+            if (saved.length > 0) {
+                symbols = saved;
+            } else {
+                symbols = [
+                    { id: 1, name: 'Cherry', emoji: '🍒', image: null },
+                    { id: 2, name: 'Seven', emoji: '7️⃣', image: null },
+                    { id: 3, name: 'Lemon', emoji: '🍋', image: null },
+                    { id: 4, name: 'Orange', emoji: '🍊', image: null },
+                    { id: 5, name: 'Star', emoji: '⭐', image: null },
+                    { id: 6, name: 'Diamond', emoji: '💎', image: null },
+                    { id: 7, name: 'Bell', emoji: '🔔', image: null },
+                    { id: 8, name: 'Clover', emoji: '🍀', image: null }
+                ];
+                localStorage.setItem('slotSymbols', JSON.stringify(symbols));
+            }
         }
 
+        // Check if server is available
+        async function checkServer() {
+            try {
+                const response = await fetch('/api/load/test', { 
+                    method: 'GET',
+                    signal: AbortSignal.timeout(3000)
+                });
+                if (response.ok) {
+                    serverAvailable = true;
+                    document.getElementById('server-status').className = 'status online';
+                    document.getElementById('server-status').innerHTML = '<span class="status-dot"></span><span>Server connected</span>';
+                }
+            } catch (e) {
+                serverAvailable = false;
+                document.getElementById('server-status').className = 'status offline';
+                document.getElementById('server-status').innerHTML = '<span class="status-dot"></span><span>Offline mode (local storage only)</span>';
+            }
+        }
+
+        // Save to server with error handling
+        async function saveToServer(id, value) {
+            if (!serverAvailable) return;
+            
+            try {
+                await fetch('/api/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, value })
+                });
+            } catch (e) {
+                console.log('Server save failed, saved locally');
+            }
+        }
+
+        // Render symbols
+        function renderSymbols() {
+            const grid = document.getElementById('symbols-grid');
+            grid.innerHTML = '';
+            
+            symbols.forEach((symbol, index) => {
+                const card = document.createElement('div');
+                card.className = 'symbol-card';
+                
+                const preview = document.createElement('div');
+                preview.className = 'symbol-preview';
+                if (symbol.image) {
+                    const img = document.createElement('img');
+                    img.src = symbol.image;
+                    preview.appendChild(img);
+                } else {
+                    preview.textContent = symbol.emoji;
+                }
+                
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.className = 'symbol-name-input';
+                nameInput.value = symbol.name;
+                nameInput.onchange = () => updateSymbolName(index, nameInput.value);
+                
+                const actions = document.createElement('div');
+                actions.className = 'symbol-actions';
+                
+                const uploadBtn = document.createElement('button');
+                uploadBtn.className = 'icon-btn upload';
+                uploadBtn.innerHTML = '📤 Upload';
+                uploadBtn.onclick = () => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.onchange = (e) => uploadSymbolImage(index, e);
+                    input.click();
+                };
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'icon-btn delete';
+                deleteBtn.innerHTML = '🗑️ Delete';
+                deleteBtn.onclick = () => deleteSymbol(index);
+                
+                actions.appendChild(uploadBtn);
+                actions.appendChild(deleteBtn);
+                
+                card.appendChild(preview);
+                card.appendChild(nameInput);
+                card.appendChild(actions);
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // Update symbol name
+        async function updateSymbolName(index, newName) {
+            symbols[index].name = newName;
+            localStorage.setItem('slotSymbols', JSON.stringify(symbols));
+            await saveToServer('symbols', symbols);
+        }
+
+        // Upload symbol image
+        async function uploadSymbolImage(index, event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                symbols[index].image = e.target.result;
+                localStorage.setItem('slotSymbols', JSON.stringify(symbols));
+                await saveToServer('symbols', symbols);
+                renderSymbols();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Delete symbol
+        async function deleteSymbol(index) {
+            if (!confirm('Delete this symbol?')) return;
+            if (symbols.length <= 3) {
+                alert('You need at least 3 symbols!');
+                return;
+            }
+            
+            symbols.splice(index, 1);
+            localStorage.setItem('slotSymbols', JSON.stringify(symbols));
+            await saveToServer('symbols', symbols);
+            renderSymbols();
+        }
+
+        // Update probabilities display
+        function updateProbabilities() {
+            const three = parseInt(document.getElementById('three-match').value) || 0;
+            const two = parseInt(document.getElementById('two-match').value) || 0;
+            const noMatch = parseInt(document.getElementById('no-match').value) || 0;
+            
+            const total = three + two + noMatch;
+            
+            // Show/hide warning based on total
+            const warning = document.getElementById('probability-warning');
+            const totalSpan = document.getElementById('total-percentage');
+            
+            if (total !== 100) {
+                warning.style.display = 'block';
+                totalSpan.textContent = total;
+            } else {
+                warning.style.display = 'none';
+            }
+        }
+
+        // Save all settings
+        async function saveSettings() {
+            const three = parseInt(document.getElementById('three-match').value) || 0;
+            const two = parseInt(document.getElementById('two-match').value) || 0;
+            const noMatch = parseInt(document.getElementById('no-match').value) || 0;
+            const spinSpeed = document.getElementById('spin-speed').value;
+            
+            // Validate probabilities total 100%
+            const total = three + two + noMatch;
+            if (total !== 100) {
+                alert(`Probabilities must total 100%! Current total: ${total}%`);
+                return;
+            }
+            
+            const probabilities = {
+                THREE_MATCH: three,
+                TWO_MATCH: two,
+                NO_MATCH: noMatch
+            };
+            
+            // Save locally
+            localStorage.setItem('slotProbabilities', JSON.stringify(probabilities));
+            localStorage.setItem('slotSpinSpeed', spinSpeed);
+            localStorage.setItem('slotSymbols', JSON.stringify(symbols));
+            
+            // Save to server
+            await saveToServer('probabilities', probabilities);
+            await saveToServer('spinSpeed', spinSpeed);
+            await saveToServer('symbols', symbols);
+            
+            showSuccessMessage('general');
+        }
+
+        // NEW: Sound selection functions
+        function selectSound(soundNumber) {
+            selectedSoundOption = soundNumber;
+            
+            // Update UI
+            document.querySelectorAll('.sound-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            document.querySelector(`[data-sound="${soundNumber}"]`).classList.add('selected');
+        }
+
+        function previewSound(soundNumber) {
+            const spinDuration = parseFloat(document.getElementById('spin-speed').value);
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const totalDuration = spinDuration + 1.2;
+            
+            switch(soundNumber) {
+                case 1:
+                    playOption1(audioCtx, spinDuration, totalDuration);
+                    break;
+                case 2:
+                    playOption2(audioCtx, spinDuration, totalDuration);
+                    break;
+                case 3:
+                    playOption3(audioCtx, spinDuration, totalDuration);
+                    break;
+                case 4:
+                    playOption4(audioCtx, spinDuration, totalDuration);
+                    break;
+                case 5:
+                    playOption5(audioCtx, spinDuration, totalDuration);
+                    break;
+            }
+        }
+
+        async function saveSoundSettings() {
+            // Save selected sound option
+            localStorage.setItem('slotSpinSound', selectedSoundOption);
+            await saveToServer('spinSound', selectedSoundOption);
+            showSuccessMessage('general');
+        }
+
+        // Sound preview functions (from testsound.html)
+        function playOption1(audioCtx, spinDuration, totalDuration) {
+            const tickCount = Math.max(30, Math.floor(spinDuration * 15));
+            
+            for (let i = 0; i < tickCount; i++) {
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.frequency.value = 1200 + (Math.random() * 200);
+                oscillator.type = 'square';
+                
+                const progress = i / tickCount;
+                const delay = progress * progress * totalDuration;
+                
+                const startTime = audioCtx.currentTime + delay;
+                gainNode.gain.setValueAtTime(0.15, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.05);
+                
+                oscillator.start(startTime);
+                oscillator.stop(startTime + 0.05);
+            }
+        }
+        
+        function playOption2(audioCtx, spinDuration, totalDuration) {
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + totalDuration);
+            oscillator.type = 'sawtooth';
+            
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.1);
+            gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime + totalDuration - 0.3);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + totalDuration);
+            
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + totalDuration);
+        }
+        
+        function playOption3(audioCtx, spinDuration, totalDuration) {
+            const clickCount = Math.floor(spinDuration * 20);
+            
+            for (let i = 0; i < clickCount; i++) {
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                const filterNode = audioCtx.createBiquadFilter();
+                
+                oscillator.connect(filterNode);
+                filterNode.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                filterNode.type = 'bandpass';
+                filterNode.frequency.value = 3000;
+                
+                oscillator.type = 'square';
+                oscillator.frequency.value = 100;
+                
+                const progress = i / clickCount;
+                const delay = Math.pow(progress, 1.5) * totalDuration;
+                
+                const startTime = audioCtx.currentTime + delay;
+                gainNode.gain.setValueAtTime(0.3, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.03);
+                
+                oscillator.start(startTime);
+                oscillator.stop(startTime + 0.03);
+            }
+        }
+        
+        function playOption4(audioCtx, spinDuration, totalDuration) {
+            const beepCount = Math.floor(spinDuration * 12);
+            const frequencies = [440, 493, 523, 587, 659];
+            
+            for (let i = 0; i < beepCount; i++) {
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.frequency.value = frequencies[i % frequencies.length];
+                oscillator.type = 'sine';
+                
+                const progress = i / beepCount;
+                const delay = Math.pow(progress, 2) * totalDuration;
+                
+                const startTime = audioCtx.currentTime + delay;
+                gainNode.gain.setValueAtTime(0.18, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.08);
+                
+                oscillator.start(startTime);
+                oscillator.stop(startTime + 0.08);
+            }
+        }
+        
+        function playOption5(audioCtx, spinDuration, totalDuration) {
+            const hitCount = Math.floor(spinDuration * 25);
+            
+            for (let i = 0; i < hitCount; i++) {
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                const filterNode = audioCtx.createBiquadFilter();
+                
+                oscillator.connect(filterNode);
+                filterNode.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                filterNode.type = 'lowpass';
+                filterNode.frequency.value = 200 + (Math.random() * 100);
+                
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.value = 80 + (Math.random() * 20);
+                
+                const progress = i / hitCount;
+                const delay = Math.pow(progress, 0.8) * totalDuration;
+                
+                const startTime = audioCtx.currentTime + delay;
+                gainNode.gain.setValueAtTime(0.25, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.04);
+                
+                oscillator.start(startTime);
+                oscillator.stop(startTime + 0.04);
+            }
+        }
+
+        // Show success message
+        function showSuccessMessage(id) {
+            let messageEl;
+            if (id === 'general') {
+                messageEl = document.createElement('div');
+                messageEl.className = 'success-message';
+                messageEl.innerHTML = '<span>✓</span><span>Settings saved successfully!</span>';
+                document.body.appendChild(messageEl);
+                setTimeout(() => messageEl.classList.add('show'), 10);
+                setTimeout(() => {
+                    messageEl.classList.remove('show');
+                    setTimeout(() => messageEl.remove(), 400);
+                }, 3000);
+            } else {
+                messageEl = document.getElementById(id + '-success');
+                messageEl.classList.add('show');
+                setTimeout(() => messageEl.classList.remove('show'), 3000);
+            }
+        }
+
+        // Background section switching
+        function showBgSection(type) {
+            // Update button states
+            document.querySelectorAll('.bg-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Hide all sections
+            document.getElementById('color-picker-section').style.display = 'none';
+            document.getElementById('gradient-picker-section').style.display = 'none';
+            document.getElementById('image-upload-section').style.display = 'none';
+            
+            // Show selected section
+            if (type === 'color') {
+                document.getElementById('color-picker-section').style.display = 'block';
+            } else if (type === 'gradient') {
+                document.getElementById('gradient-picker-section').style.display = 'block';
+            } else if (type === 'image') {
+                document.getElementById('image-upload-section').style.display = 'block';
+            }
+        }
+
+        // Apply solid color background
+        async function applyColorBackground() {
+            const color = document.getElementById('bg-color').value;
+            const bgData = {
+                type: 'color',
+                color: color
+            };
+            
+            localStorage.setItem('slotBackground', JSON.stringify(bgData));
+            if (serverAvailable) {
+                await saveToServer('background', bgData);
+            }
+            
+            showSuccessMessage('bg');
+        }
+
+        // Apply gradient background
+        async function applyGradientBackground() {
+            const color1 = document.getElementById('gradient-color1').value;
+            const color2 = document.getElementById('gradient-color2').value;
+            const color3 = document.getElementById('gradient-color3').value;
+            
+            const bgData = {
+                type: 'gradient',
+                colors: [color1, color2, color3]
+            };
+            
+            localStorage.setItem('slotBackground', JSON.stringify(bgData));
+            if (serverAvailable) {
+                await saveToServer('background', bgData);
+            }
+            
+            showSuccessMessage('bg');
+        }
+
+        // Upload background image
+        async function uploadBackgroundImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const bgData = {
+                    type: 'image',
+                    image: e.target.result
+                };
+                
+                localStorage.setItem('slotBackground', JSON.stringify(bgData));
+                if (serverAvailable) {
+                    await saveToServer('background', bgData);
+                }
+                
+                showSuccessMessage('bg');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Save color preset
+        async function saveColorPreset() {
+            const color = document.getElementById('bg-color').value;
+            const name = prompt('Enter preset name:');
+            if (!name) return;
+            
+            savedBackgroundPresets.push({
+                name: name,
+                type: 'color',
+                color: color
+            });
+            
+            localStorage.setItem('slotBackgroundPresets', JSON.stringify(savedBackgroundPresets));
+            if (serverAvailable) {
+                await saveToServer('backgroundPresets', savedBackgroundPresets);
+            }
+            
+            renderBackgroundPresets();
+        }
+
+        // Save gradient preset
+        async function saveGradientPreset() {
+            const color1 = document.getElementById('gradient-color1').value;
+            const color2 = document.getElementById('gradient-color2').value;
+            const color3 = document.getElementById('gradient-color3').value;
+            const name = prompt('Enter preset name:');
+            if (!name) return;
+            
+            savedBackgroundPresets.push({
+                name: name,
+                type: 'gradient',
+                colors: [color1, color2, color3]
+            });
+            
+            localStorage.setItem('slotBackgroundPresets', JSON.stringify(savedBackgroundPresets));
+            if (serverAvailable) {
+                await saveToServer('backgroundPresets', savedBackgroundPresets);
+            }
+            
+            renderBackgroundPresets();
+        }
+
+        // Render background presets
+        function renderBackgroundPresets() {
+            const grid = document.getElementById('bg-presets-grid');
+            
+            if (savedBackgroundPresets.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #999; padding: 20px;">No saved presets yet.</div>';
+                return;
+            }
+            
+            grid.innerHTML = '';
+            savedBackgroundPresets.forEach((preset, index) => {
+                const item = document.createElement('div');
+                item.className = 'bg-preset-item';
+                
+                const preview = document.createElement('div');
+                preview.className = 'bg-preset-preview';
+                
+                if (preset.type === 'color') {
+                    preview.style.background = preset.color;
+                } else if (preset.type === 'gradient') {
+                    preview.style.background = `linear-gradient(135deg, ${preset.colors[0]} 0%, ${preset.colors[1]} 50%, ${preset.colors[2]} 100%)`;
+                } else if (preset.type === 'image') {
+                    const img = document.createElement('img');
+                    img.src = preset.image;
+                    preview.appendChild(img);
+                }
+                
+                const name = document.createElement('div');
+                name.className = 'bg-preset-name';
+                name.textContent = preset.name;
+                
+                const actions = document.createElement('div');
+                actions.className = 'bg-preset-actions';
+                
+                const editBtn = document.createElement('button');
+                editBtn.className = 'preset-action-btn edit';
+                editBtn.innerHTML = '✏️';
+                editBtn.onclick = () => editBackgroundPreset(index);
+                
+                const useBtn = document.createElement('button');
+                useBtn.className = 'preset-action-btn use';
+                useBtn.innerHTML = '✓';
+                useBtn.onclick = () => applyBackgroundPreset(index);
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'preset-action-btn delete';
+                deleteBtn.innerHTML = '🗑️';
+                deleteBtn.onclick = () => deleteBackgroundPreset(index);
+                
+                actions.appendChild(editBtn);
+                actions.appendChild(useBtn);
+                actions.appendChild(deleteBtn);
+                
+                item.appendChild(preview);
+                item.appendChild(name);
+                item.appendChild(actions);
+                
+                grid.appendChild(item);
+            });
+        }
+
+        async function editBackgroundPreset(index) {
+            const preset = savedBackgroundPresets[index];
+            const newName = prompt('Edit preset name:', preset.name);
+            if (newName !== null && newName.trim() !== '') {
+                preset.name = newName.trim();
+                localStorage.setItem('slotBackgroundPresets', JSON.stringify(savedBackgroundPresets));
+                if (serverAvailable) {
+                    await saveToServer('backgroundPresets', savedBackgroundPresets);
+                }
+                renderBackgroundPresets();
+            }
+        }
+
+        async function applyBackgroundPreset(index) {
+            const preset = savedBackgroundPresets[index];
+            localStorage.setItem('slotBackground', JSON.stringify(preset));
+            if (serverAvailable) {
+                await saveToServer('background', preset);
+            }
+            showSuccessMessage('bg');
+        }
+
+        async function deleteBackgroundPreset(index) {
+            if (!confirm('Delete this preset?')) return;
+            savedBackgroundPresets.splice(index, 1);
+            localStorage.setItem('slotBackgroundPresets', JSON.stringify(savedBackgroundPresets));
+            if (serverAvailable) {
+                await saveToServer('backgroundPresets', savedBackgroundPresets);
+            }
+            renderBackgroundPresets();
+        }
+
+        // Color Theme functions
         async function applyColorTheme() {
-            const theme = {
+            const themeData = {
                 titleColor: document.getElementById('title-color').value,
                 subtitleColor: document.getElementById('subtitle-color').value,
                 prizeBoxBg: document.getElementById('prize-box-bg').value,
@@ -1402,21 +1588,20 @@
                 instructionText: document.getElementById('instruction-text').value
             };
 
-            localStorage.setItem('slotColorTheme', JSON.stringify(theme));
+            localStorage.setItem('slotColorTheme', JSON.stringify(themeData));
             
             if (serverAvailable) {
-                await saveToServer('colorTheme', theme);
+                await saveToServer('colorTheme', themeData);
             }
 
             showThemeSuccess();
         }
 
         async function saveColorThemePreset() {
-            const name = prompt('Enter a name for this color theme:');
+            const name = prompt('Enter color theme preset name:');
             if (!name) return;
 
-            const theme = {
-                id: Date.now(),
+            const themeData = {
                 name: name,
                 titleColor: document.getElementById('title-color').value,
                 subtitleColor: document.getElementById('subtitle-color').value,
@@ -1426,11 +1611,10 @@
                 reelBg: document.getElementById('reel-bg').value,
                 spinBtnBg: document.getElementById('spin-btn-bg').value,
                 spinBtnText: document.getElementById('spin-btn-text').value,
-                instructionText: document.getElementById('instruction-text').value,
-                timestamp: Date.now()
+                instructionText: document.getElementById('instruction-text').value
             };
 
-            savedColorThemes.push(theme);
+            savedColorThemes.push(themeData);
             localStorage.setItem('slotColorThemes', JSON.stringify(savedColorThemes));
             
             if (serverAvailable) {
@@ -1438,10 +1622,9 @@
             }
 
             renderColorThemePresets();
-            showThemeSuccess();
         }
 
-        function resetColorTheme() {
+        async function resetColorTheme() {
             document.getElementById('title-color').value = defaultColorTheme.titleColor;
             document.getElementById('subtitle-color').value = defaultColorTheme.subtitleColor;
             document.getElementById('prize-box-bg').value = defaultColorTheme.prizeBoxBg;
@@ -1451,75 +1634,56 @@
             document.getElementById('spin-btn-bg').value = defaultColorTheme.spinBtnBg;
             document.getElementById('spin-btn-text').value = defaultColorTheme.spinBtnText;
             document.getElementById('instruction-text').value = defaultColorTheme.instructionText;
+
+            await applyColorTheme();
         }
 
         function renderColorThemePresets() {
             const grid = document.getElementById('color-theme-presets-grid');
             
             if (savedColorThemes.length === 0) {
-                grid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; color: #999; padding: 20px;">
-                        No saved color themes yet. Create your first theme above!
-                    </div>
-                `;
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #999; padding: 20px;">No saved color themes yet.</div>';
                 return;
             }
             
             grid.innerHTML = '';
-            
             savedColorThemes.forEach((theme, index) => {
                 const item = document.createElement('div');
                 item.className = 'bg-preset-item';
                 
-                // Preview with color swatches
                 const preview = document.createElement('div');
                 preview.className = 'bg-preset-preview';
-                preview.style.background = `linear-gradient(135deg, ${theme.titleColor} 0%, ${theme.prizeBoxBg} 50%, ${theme.spinBtnBg} 100%)`;
-                item.appendChild(preview);
+                preview.style.background = `linear-gradient(135deg, ${theme.titleColor} 0%, ${theme.spinBtnBg} 50%, ${theme.prizeBoxBg} 100%)`;
                 
-                // Name
                 const name = document.createElement('div');
                 name.className = 'bg-preset-name';
-                name.textContent = theme.name || 'Untitled Theme';
-                item.appendChild(name);
+                name.textContent = theme.name;
                 
-                // Color boxes showing main colors
-                const colorsDiv = document.createElement('div');
-                colorsDiv.className = 'bg-preset-colors';
-                
-                const mainColors = [theme.titleColor, theme.prizeBoxBg, theme.reelBg || '#1a1a2e', theme.spinBtnBg];
-                mainColors.forEach(color => {
-                    const box = document.createElement('div');
-                    box.className = 'bg-preset-color-box';
-                    box.style.background = color;
-                    box.title = color;
-                    colorsDiv.appendChild(box);
-                });
-                item.appendChild(colorsDiv);
-                
-                // Actions
                 const actions = document.createElement('div');
                 actions.className = 'bg-preset-actions';
                 
                 const editBtn = document.createElement('button');
-                editBtn.className = 'preset-edit-btn';
-                editBtn.textContent = 'Edit';
+                editBtn.className = 'preset-action-btn edit';
+                editBtn.innerHTML = '✏️';
                 editBtn.onclick = () => editColorThemePreset(index);
                 
                 const useBtn = document.createElement('button');
-                useBtn.className = 'preset-use-btn';
-                useBtn.textContent = 'Use';
+                useBtn.className = 'preset-action-btn use';
+                useBtn.innerHTML = '✓';
                 useBtn.onclick = () => applyColorThemePreset(index);
                 
                 const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'preset-delete-btn';
-                deleteBtn.textContent = 'Delete';
+                deleteBtn.className = 'preset-action-btn delete';
+                deleteBtn.innerHTML = '🗑️';
                 deleteBtn.onclick = () => deleteColorThemePreset(index);
                 
                 actions.appendChild(editBtn);
                 actions.appendChild(useBtn);
                 actions.appendChild(deleteBtn);
                 item.appendChild(actions);
+                
+                item.appendChild(preview);
+                item.appendChild(name);
                 
                 grid.appendChild(item);
             });
@@ -1617,14 +1781,19 @@
         // Initialize
         window.onload = async () => {
             await checkServer();
+            initSymbols();
             renderSymbols();
             
-            const probs = JSON.parse(localStorage.getItem('slotProbabilities'));
-            if (probs) {
-                document.getElementById('three-match').value = probs.THREE_MATCH;
-                document.getElementById('two-match').value = probs.TWO_MATCH;
-                document.getElementById('no-match').value = probs.NO_MATCH;
+            // Reset probabilities to defaults
+            const defaultProbs = { THREE_MATCH: 10, TWO_MATCH: 25, NO_MATCH: 65 };
+            localStorage.setItem('slotProbabilities', JSON.stringify(defaultProbs));
+            if (serverAvailable) {
+                await saveToServer('probabilities', defaultProbs);
             }
+            
+            document.getElementById('three-match').value = 10;
+            document.getElementById('two-match').value = 25;
+            document.getElementById('no-match').value = 65;
             
             const speed = localStorage.getItem('slotSpinSpeed');
             if (speed) {
@@ -1632,10 +1801,24 @@
                 document.getElementById('speed-value').textContent = speed + 's';
             }
             
+            // Load selected sound option
+            const savedSound = localStorage.getItem('slotSpinSound');
+            if (savedSound) {
+                selectedSoundOption = parseInt(savedSound);
+                selectSound(selectedSoundOption);
+            } else {
+                // Select default option 1
+                selectSound(1);
+            }
+            
             // Load existing layouts
             loadLayoutPreviews();
             
             // Load saved background presets
+            const storedPresets = localStorage.getItem('slotBackgroundPresets');
+            if (storedPresets) {
+                savedBackgroundPresets = JSON.parse(storedPresets);
+            }
             renderBackgroundPresets();
             
             // Load saved color theme presets
@@ -1673,7 +1856,7 @@
                 updateLayoutPreview(type, base64Image);
                 
                 // Show success message
-                showSuccessMessage('layout-success');
+                showSuccessMessage('layout');
             };
             reader.readAsDataURL(file);
         }
@@ -1718,7 +1901,7 @@
 
         
         
-                function loadLayoutPreviews() {
+        function loadLayoutPreviews() {
             // Load legend layout
             const legendLayout = localStorage.getItem('layout-legend');
             if (legendLayout) {
@@ -1734,7 +1917,6 @@
 
         // Initialize all forms on page load
         document.addEventListener('DOMContentLoaded', function() {
-            initializeColorPickers();
             loadLayoutPreviews();
         });
 
