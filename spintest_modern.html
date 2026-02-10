@@ -1359,6 +1359,17 @@
         let symbols = [];
         let duration = 2;
         let spinning = false;
+
+        // ONE shared AudioContext reused for every sound.
+        // Must be created inside a direct user gesture (the click handler).
+        // Reusing it in setTimeouts is fine - that's what makes win/lose work.
+        let _audioCtx = null;
+        function getAudioCtx() {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (!_audioCtx) _audioCtx = new AC();
+            if (_audioCtx.state === 'suspended') _audioCtx.resume();
+            return _audioCtx;
+        }
         let cachedOdds = { THREE_MATCH: 10, TWO_MATCH: 25, NO_MATCH: 65 }; // Cache odds to avoid delay on spin
         
         // Sound effects
@@ -1371,7 +1382,6 @@
         
         // Initialize sound effects
         function initSounds() {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
             
             // Get selected sound option from admin (default to 1)
             let selectedSound = parseInt(localStorage.getItem('slotSpinSound')) || 1;
@@ -1383,7 +1393,7 @@
                     sounds.spin = {
                         play: function(spinDuration = 2.5) {
                             try {
-                                const audioCtx = new AudioContext();
+                                const audioCtx = getAudioCtx();
                                 const totalDuration = spinDuration + 1.2;
                                 const tickCount = Math.max(30, Math.floor(spinDuration * 15));
                                 
@@ -1417,7 +1427,7 @@
                     sounds.spin = {
                         play: function(spinDuration = 2.5) {
                             try {
-                                const audioCtx = new AudioContext();
+                                const audioCtx = getAudioCtx();
                                 const totalDuration = spinDuration + 1.2;
                                 const oscillator = audioCtx.createOscillator();
                                 const gainNode = audioCtx.createGain();
@@ -1446,7 +1456,7 @@
                     sounds.spin = {
                         play: function(spinDuration = 2.5) {
                             try {
-                                const audioCtx = new AudioContext();
+                                const audioCtx = getAudioCtx();
                                 const totalDuration = spinDuration + 1.2;
                                 const clickCount = Math.floor(spinDuration * 20);
                                 
@@ -1485,7 +1495,7 @@
                     sounds.spin = {
                         play: function(spinDuration = 2.5) {
                             try {
-                                const audioCtx = new AudioContext();
+                                const audioCtx = getAudioCtx();
                                 const totalDuration = spinDuration + 1.2;
                                 const beepCount = Math.floor(spinDuration * 12);
                                 const frequencies = [440, 493, 523, 587, 659];
@@ -1520,7 +1530,7 @@
                     sounds.spin = {
                         play: function(spinDuration = 2.5) {
                             try {
-                                const audioCtx = new AudioContext();
+                                const audioCtx = getAudioCtx();
                                 const totalDuration = spinDuration + 1.2;
                                 const hitCount = Math.floor(spinDuration * 25);
                                 
@@ -1559,7 +1569,7 @@
                     sounds.spin = {
                         play: function(spinDuration = 2.5) {
                             try {
-                                const audioCtx = new AudioContext();
+                                const audioCtx = getAudioCtx();
                                 const totalDuration = spinDuration + 1.2;
                                 const tickCount = Math.max(30, Math.floor(spinDuration * 15));
                                 
@@ -1594,7 +1604,7 @@
             sounds.spin = {
                 play: function(spinDuration = 2.5) {
                     try {
-                        const audioCtx = new AudioContext();
+                        const audioCtx = getAudioCtx();
                         const totalDuration = spinDuration + 1.2;
                         const oscillator = audioCtx.createOscillator();
                         const gainNode = audioCtx.createGain();
@@ -1622,7 +1632,7 @@
             sounds.spin = {
                 play: function(spinDuration = 2.5) {
                     try {
-                        const audioCtx = new AudioContext();
+                        const audioCtx = getAudioCtx();
                         const totalDuration = spinDuration + 1.2;
                         const clickCount = Math.floor(spinDuration * 20); // Adjust clicks based on duration
                         
@@ -1660,7 +1670,7 @@
             sounds.spin = {
                 play: function(spinDuration = 2.5) {
                     try {
-                        const audioCtx = new AudioContext();
+                        const audioCtx = getAudioCtx();
                         const totalDuration = spinDuration + 1.2;
                         const beepCount = Math.floor(spinDuration * 12);
                         const frequencies = [440, 493, 523, 587, 659]; // Musical notes
@@ -1694,7 +1704,7 @@
             sounds.spin = {
                 play: function(spinDuration = 2.5) {
                     try {
-                        const audioCtx = new AudioContext();
+                        const audioCtx = getAudioCtx();
                         const totalDuration = spinDuration + 1.2;
                         const hitCount = Math.floor(spinDuration * 25);
                         
@@ -1734,7 +1744,7 @@
             sounds.win = {
                 play: function() {
                     try {
-                        const audioCtx = new AudioContext();
+                        const audioCtx = getAudioCtx();
                         [523, 659, 784].forEach((freq, i) => {
                             const oscillator = audioCtx.createOscillator();
                             const gainNode = audioCtx.createGain();
@@ -1760,7 +1770,7 @@
             sounds.jackpot = {
                 play: function() {
                     try {
-                        const audioCtx = new AudioContext();
+                        const audioCtx = getAudioCtx();
                         const frequencies = [523, 659, 784, 1047];
                         frequencies.forEach((freq, i) => {
                             const oscillator = audioCtx.createOscillator();
@@ -1787,7 +1797,7 @@
             sounds.lose = {
                 play: function() {
                     try {
-                        const audioCtx = new AudioContext();
+                        const audioCtx = getAudioCtx();
                         const oscillator = audioCtx.createOscillator();
                         const gainNode = audioCtx.createGain();
                         
@@ -1895,20 +1905,6 @@
                 console.log('Using localStorage or default speed');
             }
             
-            // PRE-LOAD spin sound from server so other devices use the correct sound
-            try {
-                const soundPromise = fetchFromServer('/api/load/spinSound');
-                const soundTimeout = new Promise(resolve => setTimeout(() => resolve(null), 3000));
-                const serverSound = await Promise.race([soundPromise, soundTimeout]);
-                
-                if (serverSound !== null && serverSound !== undefined) {
-                    localStorage.setItem('slotSpinSound', String(serverSound));
-                    console.log('Pre-loaded sound from server:', serverSound);
-                }
-            } catch (e) {
-                console.log('Using localStorage sound setting');
-            }
-            
             // Load background
             await loadBackground();
             
@@ -1933,19 +1929,11 @@
                     const body = document.body;
                     
                     if (bgData.type === 'color') {
-                        // Admin saves as { type:'color', color:'#xxxxxx' }
-                        body.style.background = bgData.color || bgData.value || bgData;
+                        body.style.background = bgData.value;
                     } else if (bgData.type === 'gradient') {
-                        // Admin saves as { type:'gradient', colors:['#...','#...','#...'] }
-                        if (bgData.colors && bgData.colors.length >= 3) {
-                            body.style.background = `linear-gradient(135deg, ${bgData.colors[0]} 0%, ${bgData.colors[1]} 50%, ${bgData.colors[2]} 100%)`;
-                        } else {
-                            body.style.background = bgData.value || bgData;
-                        }
+                        body.style.background = bgData.value;
                     } else if (bgData.type === 'image') {
-                        // Admin saves as { type:'image', image:'data:image/...' }
-                        const imgSrc = bgData.image || bgData.value;
-                        body.style.backgroundImage = `url(${imgSrc})`;
+                        body.style.backgroundImage = `url(${bgData.value})`;
                         body.style.backgroundSize = 'cover';
                         body.style.backgroundPosition = 'center';
                         body.style.backgroundAttachment = 'fixed';
@@ -2106,6 +2094,7 @@
         
         // Spin logic
         document.getElementById('spin-btn').onclick = async function() {
+            getAudioCtx(); // Create/resume AudioContext HERE (direct user gesture)
             if (spinning) return;
             
             spinning = true;
