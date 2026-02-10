@@ -858,6 +858,12 @@
             <!-- Color Theme Section -->
             <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">🎨 Color Theme</h3>
             <div class="form-grid" style="margin-bottom: 24px;">
+                <!-- Page Background Color -->
+                <div class="form-group">
+                    <label>🌈 Page Background Color</label>
+                    <input type="color" id="page-bg-color" value="#e88da5" style="height: 50px;">
+                </div>
+                
                 <!-- Title Color -->
                 <div class="form-group">
                     <label>🔤 Title Text Color</label>
@@ -886,6 +892,12 @@
                 <div class="form-group">
                     <label>🎰 Slot Machine Box</label>
                     <input type="color" id="slot-box-bg" value="#e8a0bf" style="height: 50px;">
+                </div>
+                
+                <!-- Reel Frame Color -->
+                <div class="form-group">
+                    <label>🖼️ Reel Frame Color</label>
+                    <input type="color" id="reel-frame-color" value="#8b525e" style="height: 50px;">
                 </div>
                 
                 <!-- Reel Inside Color -->
@@ -955,11 +967,13 @@
         let selectedSoundOption = 1; // Default to option 1
 
         const defaultColorTheme = {
+            pageBgColor: '#e88da5',
             titleColor: '#ffed4e',
             subtitleColor: '#ffffff',
             prizeBoxBg: '#c084b3',
             prizeBoxText: '#ffed4e',
             slotBoxBg: '#e8a0bf',
+            reelFrameColor: '#8b525e',
             reelBg: '#1a1a2e',
             spinBtnBg: '#ffed4e',
             spinBtnText: '#000000',
@@ -1576,11 +1590,13 @@
         // Color Theme functions
         async function applyColorTheme() {
             const themeData = {
+                pageBgColor: document.getElementById('page-bg-color').value,
                 titleColor: document.getElementById('title-color').value,
                 subtitleColor: document.getElementById('subtitle-color').value,
                 prizeBoxBg: document.getElementById('prize-box-bg').value,
                 prizeBoxText: document.getElementById('prize-box-text').value,
                 slotBoxBg: document.getElementById('slot-box-bg').value,
+                reelFrameColor: document.getElementById('reel-frame-color').value,
                 reelBg: document.getElementById('reel-bg').value,
                 spinBtnBg: document.getElementById('spin-btn-bg').value,
                 spinBtnText: document.getElementById('spin-btn-text').value,
@@ -1601,11 +1617,13 @@
 
             const themeData = {
                 name: name,
+                pageBgColor: document.getElementById('page-bg-color').value,
                 titleColor: document.getElementById('title-color').value,
                 subtitleColor: document.getElementById('subtitle-color').value,
                 prizeBoxBg: document.getElementById('prize-box-bg').value,
                 prizeBoxText: document.getElementById('prize-box-text').value,
                 slotBoxBg: document.getElementById('slot-box-bg').value,
+                reelFrameColor: document.getElementById('reel-frame-color').value,
                 reelBg: document.getElementById('reel-bg').value,
                 spinBtnBg: document.getElementById('spin-btn-bg').value,
                 spinBtnText: document.getElementById('spin-btn-text').value,
@@ -1622,11 +1640,13 @@
         }
 
         async function resetColorTheme() {
+            document.getElementById('page-bg-color').value = defaultColorTheme.pageBgColor;
             document.getElementById('title-color').value = defaultColorTheme.titleColor;
             document.getElementById('subtitle-color').value = defaultColorTheme.subtitleColor;
             document.getElementById('prize-box-bg').value = defaultColorTheme.prizeBoxBg;
             document.getElementById('prize-box-text').value = defaultColorTheme.prizeBoxText;
             document.getElementById('slot-box-bg').value = defaultColorTheme.slotBoxBg;
+            document.getElementById('reel-frame-color').value = defaultColorTheme.reelFrameColor;
             document.getElementById('reel-bg').value = defaultColorTheme.reelBg;
             document.getElementById('spin-btn-bg').value = defaultColorTheme.spinBtnBg;
             document.getElementById('spin-btn-text').value = defaultColorTheme.spinBtnText;
@@ -1715,11 +1735,13 @@
             
             // Apply to local storage and server
             const themeData = {
+                pageBgColor: theme.pageBgColor || '#e88da5',
                 titleColor: theme.titleColor,
                 subtitleColor: theme.subtitleColor,
                 prizeBoxBg: theme.prizeBoxBg,
                 prizeBoxText: theme.prizeBoxText,
                 slotBoxBg: theme.slotBoxBg,
+                reelFrameColor: theme.reelFrameColor || '#8b525e',
                 reelBg: theme.reelBg || '#1a1a2e',
                 spinBtnBg: theme.spinBtnBg,
                 spinBtnText: theme.spinBtnText,
@@ -1767,11 +1789,14 @@
                 try { const r = await fetch('/api/load/colorTheme'); activeTheme = await r.json(); } catch(e) {}
             }
             if (activeTheme) {
+                document.getElementById('page-bg-color').value = activeTheme.pageBgColor || defaultColorTheme.pageBgColor;
                 document.getElementById('title-color').value = activeTheme.titleColor || defaultColorTheme.titleColor;
                 document.getElementById('subtitle-color').value = activeTheme.subtitleColor || defaultColorTheme.subtitleColor;
                 document.getElementById('prize-box-bg').value = activeTheme.prizeBoxBg || defaultColorTheme.prizeBoxBg;
                 document.getElementById('prize-box-text').value = activeTheme.prizeBoxText || defaultColorTheme.prizeBoxText;
                 document.getElementById('slot-box-bg').value = activeTheme.slotBoxBg || defaultColorTheme.slotBoxBg;
+                document.getElementById('reel-frame-color').value = activeTheme.reelFrameColor || defaultColorTheme.reelFrameColor;
+                document.getElementById('reel-bg').value = activeTheme.reelBg || defaultColorTheme.reelBg;
                 document.getElementById('spin-btn-bg').value = activeTheme.spinBtnBg || defaultColorTheme.spinBtnBg;
                 document.getElementById('spin-btn-text').value = activeTheme.spinBtnText || defaultColorTheme.spinBtnText;
                 document.getElementById('instruction-text').value = activeTheme.instructionText || defaultColorTheme.instructionText;

@@ -1985,6 +1985,17 @@
                         slotMachine.style.background = themeData.slotBoxBg;
                     }
                     
+                    // Apply page background color
+                    if (themeData.pageBgColor) {
+                        document.body.style.background = themeData.pageBgColor;
+                    }
+                    
+                    // Apply reel frame color
+                    const reelsContainer = document.querySelector('.reels-container');
+                    if (reelsContainer && themeData.reelFrameColor) {
+                        reelsContainer.style.background = themeData.reelFrameColor;
+                    }
+                    
                     // Apply spin button background and text
                     const spinBtn = document.querySelector('.spin-button');
                     if (spinBtn) {
