@@ -1390,7 +1390,7 @@
             const color = document.getElementById('bg-color').value;
             const bgData = {
                 type: 'color',
-                color: color
+                value: color  // Changed from 'color' to 'value'
             };
             
             if (serverAvailable) {
@@ -1406,9 +1406,11 @@
             const color2 = document.getElementById('gradient-color2').value;
             const color3 = document.getElementById('gradient-color3').value;
             
+            const gradientValue = `linear-gradient(135deg, ${color1} 0%, ${color2} 50%, ${color3} 100%)`;
+            
             const bgData = {
                 type: 'gradient',
-                colors: [color1, color2, color3]
+                value: gradientValue  // Changed to 'value' with gradient string
             };
             
             if (serverAvailable) {
@@ -1427,7 +1429,7 @@
             reader.onload = async function(e) {
                 const bgData = {
                     type: 'image',
-                    image: e.target.result
+                    value: e.target.result  // Changed from 'image' to 'value'
                 };
                 
                 if (serverAvailable) {
@@ -1448,7 +1450,7 @@
             savedBackgroundPresets.push({
                 name: name,
                 type: 'color',
-                color: color
+                value: color  // Changed from 'color' to 'value'
             });
             
             if (serverAvailable) {
@@ -1466,10 +1468,12 @@
             const name = prompt('Enter preset name:');
             if (!name) return;
             
+            const gradientValue = `linear-gradient(135deg, ${color1} 0%, ${color2} 50%, ${color3} 100%)`;
+            
             savedBackgroundPresets.push({
                 name: name,
                 type: 'gradient',
-                colors: [color1, color2, color3]
+                value: gradientValue  // Changed to 'value' with gradient string
             });
             
             if (serverAvailable) {
@@ -1497,12 +1501,12 @@
                 preview.className = 'bg-preset-preview';
                 
                 if (preset.type === 'color') {
-                    preview.style.background = preset.color;
+                    preview.style.background = preset.value;  // Changed from preset.color
                 } else if (preset.type === 'gradient') {
-                    preview.style.background = `linear-gradient(135deg, ${preset.colors[0]} 0%, ${preset.colors[1]} 50%, ${preset.colors[2]} 100%)`;
+                    preview.style.background = preset.value;  // Changed from template literal
                 } else if (preset.type === 'image') {
                     const img = document.createElement('img');
-                    img.src = preset.image;
+                    img.src = preset.value;  // Changed from preset.image
                     preview.appendChild(img);
                 }
                 
