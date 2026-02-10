@@ -1359,6 +1359,7 @@
         let symbols = [];
         let duration = 2;
         let spinning = false;
+        let cachedOdds = { THREE_MATCH: 10, TWO_MATCH: 25, NO_MATCH: 65 }; // Cache odds to avoid delay on spin
         
         // Sound effects
         const sounds = {
@@ -1859,6 +1860,41 @@
                 duration = parseFloat(savedSpeed);
             }
             
+            // PRE-LOAD probabilities to avoid delay on spin button click
+            try {
+                const oddsPromise = fetchFromServer('/api/load/probabilities');
+                const oddsTimeout = new Promise(resolve => setTimeout(() => resolve(null), 3000));
+                const serverOdds = await Promise.race([oddsPromise, oddsTimeout]);
+                
+                if (serverOdds) {
+                    cachedOdds = serverOdds;
+                    console.log('Pre-loaded odds from server:', cachedOdds);
+                } else {
+                    // Fall back to localStorage
+                    const savedOdds = JSON.parse(localStorage.getItem('slotProbabilities'));
+                    if (savedOdds) {
+                        cachedOdds = savedOdds;
+                        console.log('Pre-loaded odds from localStorage:', cachedOdds);
+                    }
+                }
+            } catch (e) {
+                console.log('Using default odds');
+            }
+            
+            // PRE-LOAD spin speed from server (overrides localStorage if available)
+            try {
+                const speedPromise = fetchFromServer('/api/load/spinSpeed');
+                const speedTimeout = new Promise(resolve => setTimeout(() => resolve(null), 3000));
+                const serverSpeed = await Promise.race([speedPromise, speedTimeout]);
+                
+                if (serverSpeed) {
+                    duration = parseFloat(serverSpeed);
+                    console.log('Pre-loaded speed from server:', duration);
+                }
+            } catch (e) {
+                console.log('Using localStorage or default speed');
+            }
+            
             // Load background
             await loadBackground();
             
@@ -2057,54 +2093,13 @@
             btnText.innerHTML = 'SPINNING <span class="spinner-icon">⚡</span>';
             document.getElementById('info-text').textContent = 'Good luck! 🍀';
             
-            // Get probabilities - check server first
-            let odds = { THREE_MATCH: 10, TWO_MATCH: 25, NO_MATCH: 65 };
+            // Use CACHED odds (pre-loaded on page load) - no server delay!
+            const odds = cachedOdds;
+            console.log('Using cached odds:', odds);
             
-            // Try to load from server first
-            try {
-                const serverOdds = await fetchFromServer('/api/load/probabilities');
-                if (serverOdds) {
-                    odds = serverOdds;
-                    console.log('Loaded odds from server:', odds);
-                }
-            } catch (e) {
-                console.log('Server odds not available, trying localStorage');
-            }
-            
-            // Fall back to localStorage
-            if (!odds || (odds.THREE_MATCH === 10 && odds.TWO_MATCH === 25)) {
-                try {
-                    const savedOdds = JSON.parse(localStorage.getItem('slotProbabilities'));
-                    if (savedOdds) {
-                        odds = savedOdds;
-                        console.log('Loaded odds from localStorage:', odds);
-                    }
-                } catch (e) {}
-            }
-            
-            console.log('Using odds:', odds);
-            
-            // Get spin speed - check server first (same as probabilities)
-            let currentDuration = duration; // Use existing default
-            
-            try {
-                const serverSpeed = await fetchFromServer('/api/load/spinSpeed');
-                if (serverSpeed) {
-                    currentDuration = parseFloat(serverSpeed);
-                    console.log('Loaded speed from server:', currentDuration);
-                }
-            } catch (e) {
-                console.log('Server speed not available, trying localStorage');
-            }
-            
-            // Fall back to localStorage
-            const savedSpeed = localStorage.getItem('slotSpinSpeed');
-            if (savedSpeed) {
-                currentDuration = parseFloat(savedSpeed);
-                console.log('Loaded speed from localStorage:', currentDuration);
-            }
-            
-            console.log('Using spin duration:', currentDuration);
+            // Use CACHED duration (pre-loaded on page load) - no server delay!
+            const currentDuration = duration;
+            console.log('Using cached duration:', currentDuration);
             
             // Play spin sound synchronized with actual duration
             if (sounds.spin) sounds.spin.play(currentDuration);
