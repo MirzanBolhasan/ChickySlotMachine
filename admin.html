@@ -1756,25 +1756,39 @@
             setTimeout(() => successMsg.classList.remove('show'), 3000);
         }
 
-        function loadColorThemePresets() {
-            const stored = localStorage.getItem('slotColorThemes');
-            if (stored) {
-                savedColorThemes = JSON.parse(stored);
+        async function loadColorThemePresets() {
+            // Load color theme presets - server first, then localStorage
+            let colorThemes = null;
+            if (serverAvailable) {
+                try { colorThemes = await fetch('/api/load/colorThemes').then(r => r.json()); } catch(e) {}
+            }
+            if (!colorThemes || !Array.isArray(colorThemes)) {
+                const stored = localStorage.getItem('slotColorThemes');
+                colorThemes = stored ? JSON.parse(stored) : null;
+            }
+            if (colorThemes && Array.isArray(colorThemes)) {
+                savedColorThemes = colorThemes;
                 renderColorThemePresets();
             }
 
-            // Load current theme into pickers
-            const currentTheme = localStorage.getItem('slotColorTheme');
+            // Load current theme into pickers - server first, then localStorage
+            let currentTheme = null;
+            if (serverAvailable) {
+                try { currentTheme = await fetch('/api/load/colorTheme').then(r => r.json()); } catch(e) {}
+            }
+            if (!currentTheme) {
+                const stored = localStorage.getItem('slotColorTheme');
+                if (stored) currentTheme = JSON.parse(stored);
+            }
             if (currentTheme) {
-                const theme = JSON.parse(currentTheme);
-                document.getElementById('title-color').value = theme.titleColor || defaultColorTheme.titleColor;
-                document.getElementById('subtitle-color').value = theme.subtitleColor || defaultColorTheme.subtitleColor;
-                document.getElementById('prize-box-bg').value = theme.prizeBoxBg || defaultColorTheme.prizeBoxBg;
-                document.getElementById('prize-box-text').value = theme.prizeBoxText || defaultColorTheme.prizeBoxText;
-                document.getElementById('slot-box-bg').value = theme.slotBoxBg || defaultColorTheme.slotBoxBg;
-                document.getElementById('spin-btn-bg').value = theme.spinBtnBg || defaultColorTheme.spinBtnBg;
-                document.getElementById('spin-btn-text').value = theme.spinBtnText || defaultColorTheme.spinBtnText;
-                document.getElementById('instruction-text').value = theme.instructionText || defaultColorTheme.instructionText;
+                document.getElementById('title-color').value = currentTheme.titleColor || defaultColorTheme.titleColor;
+                document.getElementById('subtitle-color').value = currentTheme.subtitleColor || defaultColorTheme.subtitleColor;
+                document.getElementById('prize-box-bg').value = currentTheme.prizeBoxBg || defaultColorTheme.prizeBoxBg;
+                document.getElementById('prize-box-text').value = currentTheme.prizeBoxText || defaultColorTheme.prizeBoxText;
+                document.getElementById('slot-box-bg').value = currentTheme.slotBoxBg || defaultColorTheme.slotBoxBg;
+                document.getElementById('spin-btn-bg').value = currentTheme.spinBtnBg || defaultColorTheme.spinBtnBg;
+                document.getElementById('spin-btn-text').value = currentTheme.spinBtnText || defaultColorTheme.spinBtnText;
+                document.getElementById('instruction-text').value = currentTheme.instructionText || defaultColorTheme.instructionText;
             }
         }
         
@@ -1784,40 +1798,67 @@
             initSymbols();
             renderSymbols();
             
-            // Reset probabilities to defaults
-            const defaultProbs = { THREE_MATCH: 10, TWO_MATCH: 25, NO_MATCH: 65 };
-            localStorage.setItem('slotProbabilities', JSON.stringify(defaultProbs));
+            // Load probabilities from server first, fall back to localStorage
+            let probs = { THREE_MATCH: 10, TWO_MATCH: 25, NO_MATCH: 65 };
             if (serverAvailable) {
-                await saveToServer('probabilities', defaultProbs);
+                try {
+                    const serverProbs = await fetch('/api/load/probabilities').then(r => r.json());
+                    if (serverProbs && typeof serverProbs === 'object') probs = serverProbs;
+                } catch(e) {
+                    const saved = localStorage.getItem('slotProbabilities');
+                    if (saved) probs = JSON.parse(saved);
+                }
+            } else {
+                const saved = localStorage.getItem('slotProbabilities');
+                if (saved) probs = JSON.parse(saved);
             }
+            localStorage.setItem('slotProbabilities', JSON.stringify(probs));
             
-            document.getElementById('three-match').value = 10;
-            document.getElementById('two-match').value = 25;
-            document.getElementById('no-match').value = 65;
+            document.getElementById('three-match').value = probs.THREE_MATCH;
+            document.getElementById('two-match').value = probs.TWO_MATCH;
+            document.getElementById('no-match').value = probs.NO_MATCH;
             
-            const speed = localStorage.getItem('slotSpinSpeed');
+            // Load spin speed - server first, then localStorage
+            let speed = null;
+            if (serverAvailable) {
+                try { speed = await fetch('/api/load/spinSpeed').then(r => r.json()); } catch(e) {}
+            }
+            if (!speed) speed = localStorage.getItem('slotSpinSpeed');
             if (speed) {
                 document.getElementById('spin-speed').value = speed;
                 document.getElementById('speed-value').textContent = speed + 's';
             }
             
-            // Load selected sound option
-            const savedSound = localStorage.getItem('slotSpinSound');
+            // Load sound selection - server first, then localStorage
+            let savedSound = null;
+            if (serverAvailable) {
+                try { savedSound = await fetch('/api/load/spinSound').then(r => r.json()); } catch(e) {}
+            }
+            if (savedSound === null || savedSound === undefined) {
+                savedSound = localStorage.getItem('slotSpinSound');
+            }
             if (savedSound) {
                 selectedSoundOption = parseInt(savedSound);
                 selectSound(selectedSoundOption);
             } else {
-                // Select default option 1
                 selectSound(1);
             }
             
             // Load existing layouts
             loadLayoutPreviews();
             
-            // Load saved background presets
-            const storedPresets = localStorage.getItem('slotBackgroundPresets');
-            if (storedPresets) {
-                savedBackgroundPresets = JSON.parse(storedPresets);
+            // Load saved background presets - server first, then localStorage
+            if (serverAvailable) {
+                try {
+                    const serverPresets = await fetch('/api/load/backgroundPresets').then(r => r.json());
+                    if (serverPresets && Array.isArray(serverPresets)) savedBackgroundPresets = serverPresets;
+                } catch(e) {
+                    const stored = localStorage.getItem('slotBackgroundPresets');
+                    if (stored) savedBackgroundPresets = JSON.parse(stored);
+                }
+            } else {
+                const stored = localStorage.getItem('slotBackgroundPresets');
+                if (stored) savedBackgroundPresets = JSON.parse(stored);
             }
             renderBackgroundPresets();
             

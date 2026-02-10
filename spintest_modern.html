@@ -1895,6 +1895,20 @@
                 console.log('Using localStorage or default speed');
             }
             
+            // PRE-LOAD spin sound from server so other devices use the correct sound
+            try {
+                const soundPromise = fetchFromServer('/api/load/spinSound');
+                const soundTimeout = new Promise(resolve => setTimeout(() => resolve(null), 3000));
+                const serverSound = await Promise.race([soundPromise, soundTimeout]);
+                
+                if (serverSound !== null && serverSound !== undefined) {
+                    localStorage.setItem('slotSpinSound', String(serverSound));
+                    console.log('Pre-loaded sound from server:', serverSound);
+                }
+            } catch (e) {
+                console.log('Using localStorage sound setting');
+            }
+            
             // Load background
             await loadBackground();
             
@@ -1919,11 +1933,19 @@
                     const body = document.body;
                     
                     if (bgData.type === 'color') {
-                        body.style.background = bgData.value;
+                        // Admin saves as { type:'color', color:'#xxxxxx' }
+                        body.style.background = bgData.color || bgData.value || bgData;
                     } else if (bgData.type === 'gradient') {
-                        body.style.background = bgData.value;
+                        // Admin saves as { type:'gradient', colors:['#...','#...','#...'] }
+                        if (bgData.colors && bgData.colors.length >= 3) {
+                            body.style.background = `linear-gradient(135deg, ${bgData.colors[0]} 0%, ${bgData.colors[1]} 50%, ${bgData.colors[2]} 100%)`;
+                        } else {
+                            body.style.background = bgData.value || bgData;
+                        }
                     } else if (bgData.type === 'image') {
-                        body.style.backgroundImage = `url(${bgData.value})`;
+                        // Admin saves as { type:'image', image:'data:image/...' }
+                        const imgSrc = bgData.image || bgData.value;
+                        body.style.backgroundImage = `url(${imgSrc})`;
                         body.style.backgroundSize = 'cover';
                         body.style.backgroundPosition = 'center';
                         body.style.backgroundAttachment = 'fixed';
