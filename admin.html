@@ -782,13 +782,13 @@
             <p style="color: #636e72; margin-bottom: 24px;">Customize the background appearance</p>
             
             <div class="bg-type-selector">
-                <button class="bg-type-btn active" onclick="showBgSection('color')">
+                <button class="bg-type-btn active" onclick="showBgSection('color', this)">
                     🎨 Solid Color
                 </button>
-                <button class="bg-type-btn" onclick="showBgSection('gradient')">
+                <button class="bg-type-btn" onclick="showBgSection('gradient', this)">
                     🌈 Gradient
                 </button>
-                <button class="bg-type-btn" onclick="showBgSection('image')">
+                <button class="bg-type-btn" onclick="showBgSection('image', this)">
                     🖼️ Image
                 </button>
             </div>
@@ -1360,12 +1360,13 @@
         }
 
         // Background section switching
-        function showBgSection(type) {
+        function showBgSection(type, clickedBtn) {
             // Update button states
             document.querySelectorAll('.bg-type-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            // Use the passed element (avoids unreliable window.event.target)
+            if (clickedBtn) clickedBtn.classList.add('active');
             
             // Hide all sections
             document.getElementById('color-picker-section').style.display = 'none';
@@ -1757,38 +1758,38 @@
         }
 
         async function loadColorThemePresets() {
-            // Load color theme presets - server first, then localStorage
+            // Load color theme list from server first
             let colorThemes = null;
             if (serverAvailable) {
-                try { colorThemes = await fetch('/api/load/colorThemes').then(r => r.json()); } catch(e) {}
+                try { const r = await fetch('/api/load/colorThemes'); colorThemes = await r.json(); } catch(e) {}
             }
             if (!colorThemes || !Array.isArray(colorThemes)) {
-                const stored = localStorage.getItem('slotColorThemes');
-                colorThemes = stored ? JSON.parse(stored) : null;
+                const ls = localStorage.getItem('slotColorThemes');
+                if (ls) colorThemes = JSON.parse(ls);
             }
             if (colorThemes && Array.isArray(colorThemes)) {
                 savedColorThemes = colorThemes;
                 renderColorThemePresets();
             }
 
-            // Load current theme into pickers - server first, then localStorage
-            let currentTheme = null;
+            // Load active color theme from server first
+            let activeTheme = null;
             if (serverAvailable) {
-                try { currentTheme = await fetch('/api/load/colorTheme').then(r => r.json()); } catch(e) {}
+                try { const r = await fetch('/api/load/colorTheme'); activeTheme = await r.json(); } catch(e) {}
             }
-            if (!currentTheme) {
-                const stored = localStorage.getItem('slotColorTheme');
-                if (stored) currentTheme = JSON.parse(stored);
+            if (!activeTheme) {
+                const ls = localStorage.getItem('slotColorTheme');
+                if (ls) activeTheme = JSON.parse(ls);
             }
-            if (currentTheme) {
-                document.getElementById('title-color').value = currentTheme.titleColor || defaultColorTheme.titleColor;
-                document.getElementById('subtitle-color').value = currentTheme.subtitleColor || defaultColorTheme.subtitleColor;
-                document.getElementById('prize-box-bg').value = currentTheme.prizeBoxBg || defaultColorTheme.prizeBoxBg;
-                document.getElementById('prize-box-text').value = currentTheme.prizeBoxText || defaultColorTheme.prizeBoxText;
-                document.getElementById('slot-box-bg').value = currentTheme.slotBoxBg || defaultColorTheme.slotBoxBg;
-                document.getElementById('spin-btn-bg').value = currentTheme.spinBtnBg || defaultColorTheme.spinBtnBg;
-                document.getElementById('spin-btn-text').value = currentTheme.spinBtnText || defaultColorTheme.spinBtnText;
-                document.getElementById('instruction-text').value = currentTheme.instructionText || defaultColorTheme.instructionText;
+            if (activeTheme) {
+                document.getElementById('title-color').value = activeTheme.titleColor || defaultColorTheme.titleColor;
+                document.getElementById('subtitle-color').value = activeTheme.subtitleColor || defaultColorTheme.subtitleColor;
+                document.getElementById('prize-box-bg').value = activeTheme.prizeBoxBg || defaultColorTheme.prizeBoxBg;
+                document.getElementById('prize-box-text').value = activeTheme.prizeBoxText || defaultColorTheme.prizeBoxText;
+                document.getElementById('slot-box-bg').value = activeTheme.slotBoxBg || defaultColorTheme.slotBoxBg;
+                document.getElementById('spin-btn-bg').value = activeTheme.spinBtnBg || defaultColorTheme.spinBtnBg;
+                document.getElementById('spin-btn-text').value = activeTheme.spinBtnText || defaultColorTheme.spinBtnText;
+                document.getElementById('instruction-text').value = activeTheme.instructionText || defaultColorTheme.instructionText;
             }
         }
         
@@ -1798,72 +1799,74 @@
             initSymbols();
             renderSymbols();
             
-            // Load probabilities from server first, fall back to localStorage
-            let probs = { THREE_MATCH: 10, TWO_MATCH: 25, NO_MATCH: 65 };
+            // Load probabilities from server first (never overwrite with hardcoded defaults)
+            let loadedProbs = { THREE_MATCH: 10, TWO_MATCH: 25, NO_MATCH: 65 };
             if (serverAvailable) {
                 try {
-                    const serverProbs = await fetch('/api/load/probabilities').then(r => r.json());
-                    if (serverProbs && typeof serverProbs === 'object') probs = serverProbs;
+                    const r = await fetch('/api/load/probabilities');
+                    const sp = await r.json();
+                    if (sp && typeof sp === 'object' && 'THREE_MATCH' in sp) loadedProbs = sp;
                 } catch(e) {
-                    const saved = localStorage.getItem('slotProbabilities');
-                    if (saved) probs = JSON.parse(saved);
+                    const ls = localStorage.getItem('slotProbabilities');
+                    if (ls) loadedProbs = JSON.parse(ls);
                 }
             } else {
-                const saved = localStorage.getItem('slotProbabilities');
-                if (saved) probs = JSON.parse(saved);
+                const ls = localStorage.getItem('slotProbabilities');
+                if (ls) loadedProbs = JSON.parse(ls);
             }
-            localStorage.setItem('slotProbabilities', JSON.stringify(probs));
+            localStorage.setItem('slotProbabilities', JSON.stringify(loadedProbs));
             
-            document.getElementById('three-match').value = probs.THREE_MATCH;
-            document.getElementById('two-match').value = probs.TWO_MATCH;
-            document.getElementById('no-match').value = probs.NO_MATCH;
+            document.getElementById('three-match').value = loadedProbs.THREE_MATCH;
+            document.getElementById('two-match').value = loadedProbs.TWO_MATCH;
+            document.getElementById('no-match').value = loadedProbs.NO_MATCH;
             
-            // Load spin speed - server first, then localStorage
-            let speed = null;
+            // Load spin speed from server first
+            let savedSpeed = null;
             if (serverAvailable) {
-                try { speed = await fetch('/api/load/spinSpeed').then(r => r.json()); } catch(e) {}
+                try { const r = await fetch('/api/load/spinSpeed'); savedSpeed = await r.json(); } catch(e) {}
             }
-            if (!speed) speed = localStorage.getItem('slotSpinSpeed');
-            if (speed) {
-                document.getElementById('spin-speed').value = speed;
-                document.getElementById('speed-value').textContent = speed + 's';
+            if (!savedSpeed) savedSpeed = localStorage.getItem('slotSpinSpeed');
+            if (savedSpeed) {
+                document.getElementById('spin-speed').value = savedSpeed;
+                document.getElementById('speed-value').textContent = savedSpeed + 's';
             }
             
-            // Load sound selection - server first, then localStorage
+            // Load sound selection from server first, then localStorage
             let savedSound = null;
             if (serverAvailable) {
-                try { savedSound = await fetch('/api/load/spinSound').then(r => r.json()); } catch(e) {}
+                try { const r = await fetch('/api/load/spinSound'); savedSound = await r.json(); } catch(e) {}
             }
             if (savedSound === null || savedSound === undefined) {
                 savedSound = localStorage.getItem('slotSpinSound');
             }
-            if (savedSound) {
+            if (savedSound !== null && savedSound !== undefined) {
                 selectedSoundOption = parseInt(savedSound);
                 selectSound(selectedSoundOption);
             } else {
-                selectSound(1);
+                selectSound(1); // default
             }
             
             // Load existing layouts
             loadLayoutPreviews();
             
-            // Load saved background presets - server first, then localStorage
+            // Load background presets from server first
             if (serverAvailable) {
                 try {
-                    const serverPresets = await fetch('/api/load/backgroundPresets').then(r => r.json());
-                    if (serverPresets && Array.isArray(serverPresets)) savedBackgroundPresets = serverPresets;
+                    const r = await fetch('/api/load/backgroundPresets');
+                    const sp = await r.json();
+                    if (sp && Array.isArray(sp)) savedBackgroundPresets = sp;
                 } catch(e) {
-                    const stored = localStorage.getItem('slotBackgroundPresets');
-                    if (stored) savedBackgroundPresets = JSON.parse(stored);
+                    const ls = localStorage.getItem('slotBackgroundPresets');
+                    if (ls) savedBackgroundPresets = JSON.parse(ls);
                 }
             } else {
-                const stored = localStorage.getItem('slotBackgroundPresets');
-                if (stored) savedBackgroundPresets = JSON.parse(stored);
+                const ls = localStorage.getItem('slotBackgroundPresets');
+                if (ls) savedBackgroundPresets = JSON.parse(ls);
             }
             renderBackgroundPresets();
             
             // Load saved color theme presets
-            loadColorThemePresets();
+            await loadColorThemePresets();
         };
 
         
