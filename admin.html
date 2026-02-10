@@ -967,12 +967,23 @@
         };
 
         // Initialize symbols array
-        function initSymbols() {
-            const saved = JSON.parse(localStorage.getItem('slotSymbols')) || [];
-            if (saved.length > 0) {
-                symbols = saved;
-            } else {
-                symbols = [
+        async function initSymbols() {
+            // Load from server only
+            if (serverAvailable) {
+                try {
+                    const r = await fetch('/api/load/symbols');
+                    const saved = await r.json();
+                    if (saved && saved.length > 0) {
+                        symbols = saved;
+                        return;
+                    }
+                } catch(e) {
+                    console.log('Failed to load symbols from server');
+                }
+            }
+            
+            // Use defaults if server fails
+            symbols = [
                     { id: 1, name: 'Cherry', emoji: '🍒', image: null },
                     { id: 2, name: 'Seven', emoji: '7️⃣', image: null },
                     { id: 3, name: 'Lemon', emoji: '🍋', image: null },
@@ -982,8 +993,6 @@
                     { id: 7, name: 'Bell', emoji: '🔔', image: null },
                     { id: 8, name: 'Clover', emoji: '🍀', image: null }
                 ];
-                localStorage.setItem('slotSymbols', JSON.stringify(symbols));
-            }
         }
 
         // Check if server is available
@@ -1078,7 +1087,6 @@
         // Update symbol name
         async function updateSymbolName(index, newName) {
             symbols[index].name = newName;
-            localStorage.setItem('slotSymbols', JSON.stringify(symbols));
             await saveToServer('symbols', symbols);
         }
 
@@ -1090,7 +1098,6 @@
             const reader = new FileReader();
             reader.onload = async function(e) {
                 symbols[index].image = e.target.result;
-                localStorage.setItem('slotSymbols', JSON.stringify(symbols));
                 await saveToServer('symbols', symbols);
                 renderSymbols();
             };
@@ -1106,7 +1113,6 @@
             }
             
             symbols.splice(index, 1);
-            localStorage.setItem('slotSymbols', JSON.stringify(symbols));
             await saveToServer('symbols', symbols);
             renderSymbols();
         }
@@ -1152,9 +1158,6 @@
             };
             
             // Save locally
-            localStorage.setItem('slotProbabilities', JSON.stringify(probabilities));
-            localStorage.setItem('slotSpinSpeed', spinSpeed);
-            localStorage.setItem('slotSymbols', JSON.stringify(symbols));
             
             // Save to server
             await saveToServer('probabilities', probabilities);
@@ -1202,7 +1205,6 @@
 
         async function saveSoundSettings() {
             // Save selected sound option
-            localStorage.setItem('slotSpinSound', selectedSoundOption);
             await saveToServer('spinSound', selectedSoundOption);
             showSuccessMessage('general');
         }
@@ -1391,7 +1393,6 @@
                 color: color
             };
             
-            localStorage.setItem('slotBackground', JSON.stringify(bgData));
             if (serverAvailable) {
                 await saveToServer('background', bgData);
             }
@@ -1410,7 +1411,6 @@
                 colors: [color1, color2, color3]
             };
             
-            localStorage.setItem('slotBackground', JSON.stringify(bgData));
             if (serverAvailable) {
                 await saveToServer('background', bgData);
             }
@@ -1430,7 +1430,6 @@
                     image: e.target.result
                 };
                 
-                localStorage.setItem('slotBackground', JSON.stringify(bgData));
                 if (serverAvailable) {
                     await saveToServer('background', bgData);
                 }
@@ -1452,7 +1451,6 @@
                 color: color
             });
             
-            localStorage.setItem('slotBackgroundPresets', JSON.stringify(savedBackgroundPresets));
             if (serverAvailable) {
                 await saveToServer('backgroundPresets', savedBackgroundPresets);
             }
@@ -1474,7 +1472,6 @@
                 colors: [color1, color2, color3]
             });
             
-            localStorage.setItem('slotBackgroundPresets', JSON.stringify(savedBackgroundPresets));
             if (serverAvailable) {
                 await saveToServer('backgroundPresets', savedBackgroundPresets);
             }
@@ -1548,7 +1545,6 @@
             const newName = prompt('Edit preset name:', preset.name);
             if (newName !== null && newName.trim() !== '') {
                 preset.name = newName.trim();
-                localStorage.setItem('slotBackgroundPresets', JSON.stringify(savedBackgroundPresets));
                 if (serverAvailable) {
                     await saveToServer('backgroundPresets', savedBackgroundPresets);
                 }
@@ -1558,7 +1554,6 @@
 
         async function applyBackgroundPreset(index) {
             const preset = savedBackgroundPresets[index];
-            localStorage.setItem('slotBackground', JSON.stringify(preset));
             if (serverAvailable) {
                 await saveToServer('background', preset);
             }
@@ -1568,7 +1563,6 @@
         async function deleteBackgroundPreset(index) {
             if (!confirm('Delete this preset?')) return;
             savedBackgroundPresets.splice(index, 1);
-            localStorage.setItem('slotBackgroundPresets', JSON.stringify(savedBackgroundPresets));
             if (serverAvailable) {
                 await saveToServer('backgroundPresets', savedBackgroundPresets);
             }
@@ -1589,7 +1583,6 @@
                 instructionText: document.getElementById('instruction-text').value
             };
 
-            localStorage.setItem('slotColorTheme', JSON.stringify(themeData));
             
             if (serverAvailable) {
                 await saveToServer('colorTheme', themeData);
@@ -1616,7 +1609,6 @@
             };
 
             savedColorThemes.push(themeData);
-            localStorage.setItem('slotColorThemes', JSON.stringify(savedColorThemes));
             
             if (serverAvailable) {
                 await saveToServer('colorThemes', savedColorThemes);
@@ -1707,7 +1699,6 @@
             const newName = prompt('Edit theme name:', theme.name);
             if (newName !== null && newName.trim() !== '') {
                 theme.name = newName.trim();
-                localStorage.setItem('slotColorThemes', JSON.stringify(savedColorThemes));
                 if (serverAvailable) {
                     await saveToServer('colorThemes', savedColorThemes);
                 }
@@ -1731,7 +1722,6 @@
                 instructionText: theme.instructionText
             };
 
-            localStorage.setItem('slotColorTheme', JSON.stringify(themeData));
             
             if (serverAvailable) {
                 await saveToServer('colorTheme', themeData);
@@ -1744,7 +1734,6 @@
             if (!confirm('Delete this color theme?')) return;
             
             savedColorThemes.splice(index, 1);
-            localStorage.setItem('slotColorThemes', JSON.stringify(savedColorThemes));
             if (serverAvailable) {
                 await saveToServer('colorThemes', savedColorThemes);
             }
@@ -1758,28 +1747,20 @@
         }
 
         async function loadColorThemePresets() {
-            // Load color theme list from server first
+            // Load color theme list from server only
             let colorThemes = null;
             if (serverAvailable) {
                 try { const r = await fetch('/api/load/colorThemes'); colorThemes = await r.json(); } catch(e) {}
-            }
-            if (!colorThemes || !Array.isArray(colorThemes)) {
-                const ls = localStorage.getItem('slotColorThemes');
-                if (ls) colorThemes = JSON.parse(ls);
             }
             if (colorThemes && Array.isArray(colorThemes)) {
                 savedColorThemes = colorThemes;
                 renderColorThemePresets();
             }
 
-            // Load active color theme from server first
+            // Load active color theme from server only
             let activeTheme = null;
             if (serverAvailable) {
                 try { const r = await fetch('/api/load/colorTheme'); activeTheme = await r.json(); } catch(e) {}
-            }
-            if (!activeTheme) {
-                const ls = localStorage.getItem('slotColorTheme');
-                if (ls) activeTheme = JSON.parse(ls);
             }
             if (activeTheme) {
                 document.getElementById('title-color').value = activeTheme.titleColor || defaultColorTheme.titleColor;
@@ -1796,7 +1777,7 @@
         // Initialize
         window.onload = async () => {
             await checkServer();
-            initSymbols();
+            await initSymbols();
             renderSymbols();
             
             // Load probabilities from server first (never overwrite with hardcoded defaults)
@@ -1806,38 +1787,27 @@
                     const r = await fetch('/api/load/probabilities');
                     const sp = await r.json();
                     if (sp && typeof sp === 'object' && 'THREE_MATCH' in sp) loadedProbs = sp;
-                } catch(e) {
-                    const ls = localStorage.getItem('slotProbabilities');
-                    if (ls) loadedProbs = JSON.parse(ls);
-                }
-            } else {
-                const ls = localStorage.getItem('slotProbabilities');
-                if (ls) loadedProbs = JSON.parse(ls);
+                } catch(e) {}
             }
-            localStorage.setItem('slotProbabilities', JSON.stringify(loadedProbs));
             
             document.getElementById('three-match').value = loadedProbs.THREE_MATCH;
             document.getElementById('two-match').value = loadedProbs.TWO_MATCH;
             document.getElementById('no-match').value = loadedProbs.NO_MATCH;
             
-            // Load spin speed from server first
+            // Load spin speed from server only
             let savedSpeed = null;
             if (serverAvailable) {
                 try { const r = await fetch('/api/load/spinSpeed'); savedSpeed = await r.json(); } catch(e) {}
             }
-            if (!savedSpeed) savedSpeed = localStorage.getItem('slotSpinSpeed');
             if (savedSpeed) {
                 document.getElementById('spin-speed').value = savedSpeed;
                 document.getElementById('speed-value').textContent = savedSpeed + 's';
             }
             
-            // Load sound selection from server first, then localStorage
+            // Load sound selection from server only
             let savedSound = null;
             if (serverAvailable) {
                 try { const r = await fetch('/api/load/spinSound'); savedSound = await r.json(); } catch(e) {}
-            }
-            if (savedSound === null || savedSound === undefined) {
-                savedSound = localStorage.getItem('slotSpinSound');
             }
             if (savedSound !== null && savedSound !== undefined) {
                 selectedSoundOption = parseInt(savedSound);
@@ -1849,19 +1819,13 @@
             // Load existing layouts
             loadLayoutPreviews();
             
-            // Load background presets from server first
+            // Load background presets from server only
             if (serverAvailable) {
                 try {
                     const r = await fetch('/api/load/backgroundPresets');
                     const sp = await r.json();
                     if (sp && Array.isArray(sp)) savedBackgroundPresets = sp;
-                } catch(e) {
-                    const ls = localStorage.getItem('slotBackgroundPresets');
-                    if (ls) savedBackgroundPresets = JSON.parse(ls);
-                }
-            } else {
-                const ls = localStorage.getItem('slotBackgroundPresets');
-                if (ls) savedBackgroundPresets = JSON.parse(ls);
+                } catch(e) {}
             }
             renderBackgroundPresets();
             
@@ -1879,9 +1843,6 @@
             reader.onload = async function(e) {
                 const base64Image = e.target.result;
                 
-                // Save to localStorage
-                localStorage.setItem(`layout-${type}`, base64Image);
-                
                 // Save to server
                 try {
                     await fetch('/api/save', {
@@ -1893,7 +1854,7 @@
                         })
                     });
                 } catch (e) {
-                    console.log('Server save failed, saved locally');
+                    console.log('Server save failed');
                 }
                 
                 // Update preview
@@ -1921,9 +1882,6 @@
         async function removeLayoutImage(type) {
             if (!confirm('Remove this layout design?')) return;
             
-            // Remove from localStorage
-            localStorage.removeItem(`layout-${type}`);
-            
             // Remove from server
             try {
                 await fetch('/api/save', {
@@ -1935,7 +1893,7 @@
                     })
                 });
             } catch (e) {
-                console.log('Server remove failed, removed locally');
+                console.log('Server remove failed');
             }
             
             // Update preview
@@ -1945,23 +1903,29 @@
 
         
         
-        function loadLayoutPreviews() {
-            // Load legend layout
-            const legendLayout = localStorage.getItem('layout-legend');
-            if (legendLayout) {
-                updateLayoutPreview('legend', legendLayout);
-            }
+        async function loadLayoutPreviews() {
+            // Load legend layout from server
+            try {
+                const r = await fetch('/api/load/layout-legend');
+                const legendLayout = await r.json();
+                if (legendLayout) {
+                    updateLayoutPreview('legend', legendLayout);
+                }
+            } catch(e) {}
             
-            // Load machine layout
-            const machineLayout = localStorage.getItem('layout-machine');
-            if (machineLayout) {
-                updateLayoutPreview('machine', machineLayout);
-            }
+            // Load machine layout from server
+            try {
+                const r = await fetch('/api/load/layout-machine');
+                const machineLayout = await r.json();
+                if (machineLayout) {
+                    updateLayoutPreview('machine', machineLayout);
+                }
+            } catch(e) {}
         }
 
         // Initialize all forms on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadLayoutPreviews();
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadLayoutPreviews();
         });
 
     </script>

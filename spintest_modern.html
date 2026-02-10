@@ -1381,10 +1381,22 @@
         };
         
         // Initialize sound effects
-        function initSounds() {
+        async function initSounds() {
             
-            // Get selected sound option from admin (default to 1)
-            let selectedSound = parseInt(localStorage.getItem('slotSpinSound')) || 1;
+            // Load selected sound option from SERVER ONLY
+            let selectedSound = 1; // default
+            try {
+                const soundPromise = fetchFromServer('/api/load/spinSound');
+                const soundTimeout = new Promise(resolve => setTimeout(() => resolve(null), 3000));
+                const serverSound = await Promise.race([soundPromise, soundTimeout]);
+                
+                if (serverSound !== null && serverSound !== undefined) {
+                    selectedSound = parseInt(serverSound);
+                    console.log('Loaded sound from server:', selectedSound);
+                }
+            } catch (e) {
+                console.log('Failed to load sound, using default:', e);
+            }
             
             // Load sound option based on admin selection
             switch(selectedSound) {
@@ -1838,7 +1850,7 @@
         
         // Load settings
         async function loadSettings() {
-            // Try server FIRST for cross-device consistency with timeout
+            // Load symbols from SERVER ONLY
             try {
                 const settingsPromise = fetchFromServer('/api/load/symbols');
                 const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(null), 6000));
@@ -1848,29 +1860,15 @@
                     symbols = serverData.map(s => s.image || s.emoji);
                     console.log('Loaded symbols from server:', symbols.length);
                 } else {
-                    throw new Error('No server data');
+                    // Use default symbols if server fails
+                    symbols = ['🍒', '7️⃣', '🍋', '🍊', '⭐', '💎', '🔔', '🍀'];
                 }
             } catch (e) {
-                // Fall back to localStorage
-                console.log('Server not available, trying localStorage:', e.message);
-                const saved = JSON.parse(localStorage.getItem('slotSymbols')) || [];
-                if (saved.length > 0) {
-                    symbols = saved.map(s => s.image || s.emoji);
-                }
-            }
-            
-            // Default symbols if nothing loaded
-            if (symbols.length === 0) {
+                console.log('Failed to load symbols, using defaults:', e.message);
                 symbols = ['🍒', '7️⃣', '🍋', '🍊', '⭐', '💎', '🔔', '🍀'];
             }
             
-            // Load spin speed
-            const savedSpeed = localStorage.getItem('slotSpinSpeed');
-            if (savedSpeed) {
-                duration = parseFloat(savedSpeed);
-            }
-            
-            // PRE-LOAD probabilities to avoid delay on spin button click
+            // PRE-LOAD probabilities from SERVER ONLY
             try {
                 const oddsPromise = fetchFromServer('/api/load/probabilities');
                 const oddsTimeout = new Promise(resolve => setTimeout(() => resolve(null), 3000));
@@ -1878,20 +1876,13 @@
                 
                 if (serverOdds) {
                     cachedOdds = serverOdds;
-                    console.log('Pre-loaded odds from server:', cachedOdds);
-                } else {
-                    // Fall back to localStorage
-                    const savedOdds = JSON.parse(localStorage.getItem('slotProbabilities'));
-                    if (savedOdds) {
-                        cachedOdds = savedOdds;
-                        console.log('Pre-loaded odds from localStorage:', cachedOdds);
-                    }
+                    console.log('Loaded odds from server:', cachedOdds);
                 }
             } catch (e) {
-                console.log('Using default odds');
+                console.log('Failed to load odds, using defaults:', e);
             }
             
-            // PRE-LOAD spin speed from server (overrides localStorage if available)
+            // PRE-LOAD spin speed from SERVER ONLY
             try {
                 const speedPromise = fetchFromServer('/api/load/spinSpeed');
                 const speedTimeout = new Promise(resolve => setTimeout(() => resolve(null), 3000));
@@ -1899,10 +1890,10 @@
                 
                 if (serverSpeed) {
                     duration = parseFloat(serverSpeed);
-                    console.log('Pre-loaded speed from server:', duration);
+                    console.log('Loaded speed from server:', duration);
                 }
             } catch (e) {
-                console.log('Using localStorage or default speed');
+                console.log('Failed to load speed, using default:', e);
             }
             
             // Load background
@@ -1915,15 +1906,10 @@
         // Load and apply background
         async function loadBackground() {
             try {
-                // Try server first with timeout
+                // Load background from SERVER ONLY
                 const bgPromise = fetchFromServer('/api/load/background');
                 const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(null), 6000));
-                let bgData = await Promise.race([bgPromise, timeoutPromise]);
-                
-                // Fall back to local storage if server fails
-                if (!bgData) {
-                    bgData = JSON.parse(localStorage.getItem('slotBackground'));
-                }
+                const bgData = await Promise.race([bgPromise, timeoutPromise]);
                 
                 if (bgData) {
                     const body = document.body;
@@ -1940,22 +1926,17 @@
                     }
                 }
             } catch (e) {
-                console.log('Background loading error:', e.message);
+                console.log('Failed to load background:', e.message);
             }
         }
         
         // Load and apply color theme
         async function loadColorTheme() {
             try {
-                // Try server first with timeout
+                // Load color theme from SERVER ONLY
                 const themePromise = fetchFromServer('/api/load/colorTheme');
                 const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(null), 6000));
-                let themeData = await Promise.race([themePromise, timeoutPromise]);
-                
-                // Fall back to local storage if server fails
-                if (!themeData) {
-                    themeData = JSON.parse(localStorage.getItem('slotColorTheme'));
-                }
+                const themeData = await Promise.race([themePromise, timeoutPromise]);
                 
                 if (themeData) {
                     const root = document.documentElement;
@@ -2365,35 +2346,27 @@
         // Load and apply layout designs
         async function loadLayouts() {
             try {
-                // Load legend layout
+                // Load legend layout from SERVER ONLY
                 const legendPromise = fetchFromServer('/api/load/layout-legend');
                 const legendTimeout = new Promise(resolve => setTimeout(() => resolve(null), 3000));
-                let legendLayout = await Promise.race([legendPromise, legendTimeout]);
-                
-                if (!legendLayout) {
-                    legendLayout = localStorage.getItem('layout-legend');
-                }
+                const legendLayout = await Promise.race([legendPromise, legendTimeout]);
                 
                 if (legendLayout) {
                     document.documentElement.style.setProperty('--legend-layout', `url(${legendLayout})`);
                     document.querySelector('.prize-legend').classList.add('has-layout');
                 }
                 
-                // Load machine layout
+                // Load machine layout from SERVER ONLY
                 const machinePromise = fetchFromServer('/api/load/layout-machine');
                 const machineTimeout = new Promise(resolve => setTimeout(() => resolve(null), 3000));
-                let machineLayout = await Promise.race([machinePromise, machineTimeout]);
-                
-                if (!machineLayout) {
-                    machineLayout = localStorage.getItem('layout-machine');
-                }
+                const machineLayout = await Promise.race([machinePromise, machineTimeout]);
                 
                 if (machineLayout) {
                     document.documentElement.style.setProperty('--machine-layout', `url(${machineLayout})`);
                     document.querySelector('.slot-machine').classList.add('has-layout');
                 }
             } catch (e) {
-                console.log('Layout loading error:', e.message);
+                console.log('Failed to load layouts:', e.message);
             }
         }
         
@@ -2403,24 +2376,16 @@
         // Load full template if enabled
         async function loadFullTemplate() {
             try {
-                // Check if template mode is enabled
+                // Check if template mode is enabled - SERVER ONLY
                 const modePromise = fetchFromServer('/api/load/template-mode');
                 const modeTimeout = new Promise(resolve => setTimeout(() => resolve(null), 2000));
-                let templateMode = await Promise.race([modePromise, modeTimeout]);
-                
-                if (!templateMode || templateMode === 'false') {
-                    templateMode = localStorage.getItem('template-mode');
-                }
+                const templateMode = await Promise.race([modePromise, modeTimeout]);
                 
                 if (templateMode === 'true') {
-                    // Load the template image
+                    // Load the template image from SERVER ONLY
                     const templatePromise = fetchFromServer('/api/load/full-template');
                     const templateTimeout = new Promise(resolve => setTimeout(() => resolve(null), 3000));
-                    let templateImage = await Promise.race([templatePromise, templateTimeout]);
-                    
-                    if (!templateImage) {
-                        templateImage = localStorage.getItem('full-template');
-                    }
+                    const templateImage = await Promise.race([templatePromise, templateTimeout]);
                     
                     if (templateImage) {
                         // Apply template
@@ -2430,7 +2395,7 @@
                     }
                 }
             } catch (e) {
-                console.log('Template loading error:', e.message);
+                console.log('Failed to load template:', e.message);
             }
         }
 
@@ -2442,7 +2407,7 @@
             
             
             // Initialize sound effects
-            initSounds();
+            await initSounds();
             // Populate prize legend with actual symbols
             populatePrizeLegend();
             
