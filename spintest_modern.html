@@ -2173,19 +2173,29 @@
                 btnText.textContent = 'SPIN AGAIN';
                 document.getElementById('info-text').textContent = 'Press SPIN to play!';
                 
-                // Highlight the center (winning) symbols
-                [1, 2, 3].forEach(i => {
-                    const strip = document.getElementById('reel' + i);
-                    const symbols = strip.querySelectorAll('.reel-symbol');
-                    // The center symbol should be at index 13-15 (we positioned it at 13)
-                    if (symbols[14]) {
-                        symbols[14].classList.add('winning');
-                        // Remove highlight after animation completes
-                        setTimeout(() => {
-                            symbols[14].classList.remove('winning');
-                        }, 1000);
-                    }
-                });
+                // Highlight ONLY the matching symbols based on result
+                if (result === 'THREE_MATCH') {
+                    // All 3 symbols match - highlight all 3
+                    [1, 2, 3].forEach(i => {
+                        const strip = document.getElementById('reel' + i);
+                        const symbols = strip.querySelectorAll('.reel-symbol');
+                        if (symbols[14]) {
+                            symbols[14].classList.add('winning');
+                            setTimeout(() => symbols[14].classList.remove('winning'), 1000);
+                        }
+                    });
+                } else if (result === 'TWO_MATCH') {
+                    // Only first 2 symbols match - highlight only reels 1 and 2
+                    [1, 2].forEach(i => {
+                        const strip = document.getElementById('reel' + i);
+                        const symbols = strip.querySelectorAll('.reel-symbol');
+                        if (symbols[14]) {
+                            symbols[14].classList.add('winning');
+                            setTimeout(() => symbols[14].classList.remove('winning'), 1000);
+                        }
+                    });
+                }
+                // NO_MATCH: Don't highlight anything
                 
                 // Show prize popup with actual icons
                 const prizeConfig = prizes[result];
@@ -2231,8 +2241,9 @@
                 } else if (sounds.lose) {
                     sounds.lose.play();
                 }
-                // Emoji rain for wins
-                if (result !== 'NO_MATCH') {
+                
+                // Emoji rain ONLY for JACKPOT (all 3 matching)
+                if (result === 'THREE_MATCH') {
                     createEmojiRain();
                 }
                 
