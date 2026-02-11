@@ -1400,35 +1400,23 @@
             }
         }
 
-        /* Mobile viewport height fix (handles address bar) */
+        /* Mobile — no scroll, fullscreen button hidden, popup fixed */
         @media (max-width: 768px) {
 
             html, body {
-                height: 100%;
-                max-height: 100%;
                 overflow: hidden;
-            }
-
-            body {
-                padding: 8px;
-            }
-
-            .container {
                 height: 100%;
-                max-height: 100%;
-                overflow: hidden;
-                justify-content: center;
             }
 
-            /* Hide fullscreen button on mobile — not needed */
+            /* Hide fullscreen button — not needed on mobile */
             .fullscreen-btn {
                 display: none !important;
             }
 
-            /* Fix win popup — no horizontal cutoff */
+            /* Fix win popup — prevent text/prize box being cut off */
             .win-popup {
                 flex-direction: row;
-                flex-wrap: wrap;
+                flex-wrap: nowrap;
                 align-items: center;
                 max-height: none;
                 min-height: unset;
@@ -1437,9 +1425,9 @@
             }
 
             .win-popup .emoji {
-                font-size: 32px;
-                width: 44px;
-                height: 44px;
+                font-size: 30px;
+                width: 40px;
+                height: 40px;
                 padding-right: 8px;
                 flex-shrink: 0;
             }
@@ -1447,46 +1435,33 @@
             .win-popup-content {
                 flex: 1;
                 min-width: 0;
-                padding-right: 8px;
+                padding-right: 6px;
                 gap: 2px;
+                overflow: hidden;
             }
 
             .win-popup h1 {
-                font-size: 18px;
+                font-size: 16px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             .win-popup p {
                 font-size: 11px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             .win-popup .prize {
-                font-size: 12px;
-                padding: 6px 10px;
-                white-space: normal;
-                word-break: break-word;
-                flex-shrink: 1;
-                min-width: 0;
-            }
-
-            /* Make reels fill available space without scroll */
-            .slot-machine {
-                flex: 1;
-                min-height: 0;
+                font-size: 11px;
+                padding: 6px 8px;
+                white-space: nowrap;
+                flex-shrink: 0;
+                max-width: 38%;
                 overflow: hidden;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .reels-container {
-                flex: 1;
-                min-height: 0;
-                overflow: hidden;
-            }
-
-            .reel {
-                height: auto !important;
-                flex: 1;
-                min-height: 0;
+                text-overflow: ellipsis;
             }
         }
     </style>
