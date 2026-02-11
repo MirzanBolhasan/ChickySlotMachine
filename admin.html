@@ -668,62 +668,6 @@
             </button>
         </div>
 
-        <!-- Spin Sound Selection - NEW FEATURE -->
-        <div class="card">
-            <h2>
-                <span class="card-icon">🔊</span>
-                Spin Sound Effect
-            </h2>
-            <p style="color: #636e72; margin-bottom: 24px;">Choose the sound effect that plays during spinning</p>
-            
-            <div id="sound-options">
-                <div class="sound-option" data-sound="1" onclick="selectSound(1)">
-                    <div class="option-header">
-                        <span class="option-name">🎵 Rapid Ticking</span>
-                        <span class="badge">CLASSIC</span>
-                    </div>
-                    <p class="option-description">Fast clicking sounds that slow down as the reels stop</p>
-                    <button class="play-btn-small" onclick="event.stopPropagation(); previewSound(1)">▶ Preview</button>
-                </div>
-                
-                <div class="sound-option" data-sound="2" onclick="selectSound(2)">
-                    <div class="option-header">
-                        <span class="option-name">🌀 Smooth Whooshing</span>
-                    </div>
-                    <p class="option-description">Wheel-like spinning sound that gradually slows</p>
-                    <button class="play-btn-small" onclick="event.stopPropagation(); previewSound(2)">▶ Preview</button>
-                </div>
-                
-                <div class="sound-option" data-sound="3" onclick="selectSound(3)">
-                    <div class="option-header">
-                        <span class="option-name">⚙️ Mechanical Clicking</span>
-                    </div>
-                    <p class="option-description">Ratchet-like mechanical clicks</p>
-                    <button class="play-btn-small" onclick="event.stopPropagation(); previewSound(3)">▶ Preview</button>
-                </div>
-                
-                <div class="sound-option" data-sound="4" onclick="selectSound(4)">
-                    <div class="option-header">
-                        <span class="option-name">🎮 Electronic Beeping</span>
-                    </div>
-                    <p class="option-description">Arcade-style musical beeps</p>
-                    <button class="play-btn-small" onclick="event.stopPropagation(); previewSound(4)">▶ Preview</button>
-                </div>
-                
-                <div class="sound-option" data-sound="5" onclick="selectSound(5)">
-                    <div class="option-header">
-                        <span class="option-name">🥁 Drum Roll</span>
-                    </div>
-                    <p class="option-description">Building tension with drum roll effect</p>
-                    <button class="play-btn-small" onclick="event.stopPropagation(); previewSound(5)">▶ Preview</button>
-                </div>
-            </div>
-            
-            <button class="btn btn-primary" onclick="saveSoundSettings()" style="margin-top: 16px;">
-                <span>💾</span> Save Sound Selection
-            </button>
-        </div>
-        
 
         <!-- Layout Design Upload -->
         <div class="card">
@@ -964,7 +908,6 @@
         let serverAvailable = false;
         let savedBackgroundPresets = [];
         let savedColorThemes = [];
-        let selectedSoundOption = 1; // Default to option 1
 
         const defaultColorTheme = {
             pageBgColor: '#e88da5',
@@ -1181,179 +1124,6 @@
             showSuccessMessage('general');
         }
 
-        // NEW: Sound selection functions
-        function selectSound(soundNumber) {
-            selectedSoundOption = soundNumber;
-            
-            // Update UI
-            document.querySelectorAll('.sound-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            
-            document.querySelector(`[data-sound="${soundNumber}"]`).classList.add('selected');
-        }
-
-        function previewSound(soundNumber) {
-            const spinDuration = parseFloat(document.getElementById('spin-speed').value);
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const totalDuration = spinDuration + 1.2;
-            
-            switch(soundNumber) {
-                case 1:
-                    playOption1(audioCtx, spinDuration, totalDuration);
-                    break;
-                case 2:
-                    playOption2(audioCtx, spinDuration, totalDuration);
-                    break;
-                case 3:
-                    playOption3(audioCtx, spinDuration, totalDuration);
-                    break;
-                case 4:
-                    playOption4(audioCtx, spinDuration, totalDuration);
-                    break;
-                case 5:
-                    playOption5(audioCtx, spinDuration, totalDuration);
-                    break;
-            }
-        }
-
-        async function saveSoundSettings() {
-            // Save selected sound option
-            await saveToServer('spinSound', selectedSoundOption);
-            showSuccessMessage('general');
-        }
-
-        // Sound preview functions (from testsound.html)
-        function playOption1(audioCtx, spinDuration, totalDuration) {
-            const tickCount = Math.max(30, Math.floor(spinDuration * 15));
-            
-            for (let i = 0; i < tickCount; i++) {
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                
-                oscillator.frequency.value = 1200 + (Math.random() * 200);
-                oscillator.type = 'square';
-                
-                const progress = i / tickCount;
-                const delay = progress * progress * totalDuration;
-                
-                const startTime = audioCtx.currentTime + delay;
-                gainNode.gain.setValueAtTime(0.15, startTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.05);
-                
-                oscillator.start(startTime);
-                oscillator.stop(startTime + 0.05);
-            }
-        }
-        
-        function playOption2(audioCtx, spinDuration, totalDuration) {
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            
-            oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + totalDuration);
-            oscillator.type = 'sawtooth';
-            
-            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.1);
-            gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime + totalDuration - 0.3);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + totalDuration);
-            
-            oscillator.start(audioCtx.currentTime);
-            oscillator.stop(audioCtx.currentTime + totalDuration);
-        }
-        
-        function playOption3(audioCtx, spinDuration, totalDuration) {
-            const clickCount = Math.floor(spinDuration * 20);
-            
-            for (let i = 0; i < clickCount; i++) {
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                const filterNode = audioCtx.createBiquadFilter();
-                
-                oscillator.connect(filterNode);
-                filterNode.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                
-                filterNode.type = 'bandpass';
-                filterNode.frequency.value = 3000;
-                
-                oscillator.type = 'square';
-                oscillator.frequency.value = 100;
-                
-                const progress = i / clickCount;
-                const delay = Math.pow(progress, 1.5) * totalDuration;
-                
-                const startTime = audioCtx.currentTime + delay;
-                gainNode.gain.setValueAtTime(0.3, startTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.03);
-                
-                oscillator.start(startTime);
-                oscillator.stop(startTime + 0.03);
-            }
-        }
-        
-        function playOption4(audioCtx, spinDuration, totalDuration) {
-            const beepCount = Math.floor(spinDuration * 12);
-            const frequencies = [440, 493, 523, 587, 659];
-            
-            for (let i = 0; i < beepCount; i++) {
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                
-                oscillator.frequency.value = frequencies[i % frequencies.length];
-                oscillator.type = 'sine';
-                
-                const progress = i / beepCount;
-                const delay = Math.pow(progress, 2) * totalDuration;
-                
-                const startTime = audioCtx.currentTime + delay;
-                gainNode.gain.setValueAtTime(0.18, startTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.08);
-                
-                oscillator.start(startTime);
-                oscillator.stop(startTime + 0.08);
-            }
-        }
-        
-        function playOption5(audioCtx, spinDuration, totalDuration) {
-            const hitCount = Math.floor(spinDuration * 25);
-            
-            for (let i = 0; i < hitCount; i++) {
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                const filterNode = audioCtx.createBiquadFilter();
-                
-                oscillator.connect(filterNode);
-                filterNode.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                
-                filterNode.type = 'lowpass';
-                filterNode.frequency.value = 200 + (Math.random() * 100);
-                
-                oscillator.type = 'sawtooth';
-                oscillator.frequency.value = 80 + (Math.random() * 20);
-                
-                const progress = i / hitCount;
-                const delay = Math.pow(progress, 0.8) * totalDuration;
-                
-                const startTime = audioCtx.currentTime + delay;
-                gainNode.gain.setValueAtTime(0.25, startTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.04);
-                
-                oscillator.start(startTime);
-                oscillator.stop(startTime + 0.04);
-            }
-        }
 
         // Show success message
         function showSuccessMessage(id) {
@@ -1833,17 +1603,6 @@
                 document.getElementById('speed-value').textContent = savedSpeed + 's';
             }
             
-            // Load sound selection from server only
-            let savedSound = null;
-            if (serverAvailable) {
-                try { const r = await fetch('/api/load/spinSound'); savedSound = await r.json(); } catch(e) {}
-            }
-            if (savedSound !== null && savedSound !== undefined) {
-                selectedSoundOption = parseInt(savedSound);
-                selectSound(selectedSoundOption);
-            } else {
-                selectSound(1); // default
-            }
             
             // Load existing layouts
             loadLayoutPreviews();

@@ -463,16 +463,11 @@
         }
         
         .reel-strip.spinning {
-            filter: blur(8px);
+            /* Smooth spinning animation - no blur */
         }
         
         .reel-strip.spinning .reel-symbol {
-            animation: spinSymbolPulse 0.1s ease-in-out infinite;
-        }
-        
-        @keyframes spinSymbolPulse {
-            0%, 100% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; }
+            /* Smooth scrolling effect */
         }
         
         .reel-symbol {
@@ -1382,233 +1377,38 @@
         
         // Initialize sound effects
         async function initSounds() {
-            
-            // Load selected sound option from SERVER ONLY
-            let selectedSound = 1; // default
-            try {
-                const soundPromise = fetchFromServer('/api/load/spinSound');
-                const soundTimeout = new Promise(resolve => setTimeout(() => resolve(null), 3000));
-                const serverSound = await Promise.race([soundPromise, soundTimeout]);
-                
-                if (serverSound !== null && serverSound !== undefined) {
-                    selectedSound = parseInt(serverSound);
-                    console.log('Loaded sound from server:', selectedSound);
+            // Electronic Beeping sound - synchronized with spin duration
+            sounds.spin = {
+                play: function(spinDuration = 2.5) {
+                    try {
+                        const audioCtx = getAudioCtx();
+                        const totalDuration = spinDuration + 1.2;
+                        const beepCount = Math.floor(spinDuration * 12);
+                        const frequencies = [440, 493, 523, 587, 659];
+                        
+                        for (let i = 0; i < beepCount; i++) {
+                            const oscillator = audioCtx.createOscillator();
+                            const gainNode = audioCtx.createGain();
+                            
+                            oscillator.connect(gainNode);
+                            gainNode.connect(audioCtx.destination);
+                            
+                            oscillator.frequency.value = frequencies[i % frequencies.length];
+                            oscillator.type = 'sine';
+                            
+                            const progress = i / beepCount;
+                            const delay = Math.pow(progress, 2) * totalDuration;
+                            
+                            const startTime = audioCtx.currentTime + delay;
+                            gainNode.gain.setValueAtTime(0.18, startTime);
+                            gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.08);
+                            
+                            oscillator.start(startTime);
+                            oscillator.stop(startTime + 0.08);
+                        }
+                    } catch(e) { console.log('Sound error:', e); }
                 }
-            } catch (e) {
-                console.log('Failed to load sound, using default:', e);
-            }
-            
-            // Load sound option based on admin selection
-            switch(selectedSound) {
-                case 1:
-                    // OPTION 1: Rapid Ticking (default)
-                    sounds.spin = {
-                        play: function(spinDuration = 2.5) {
-                            try {
-                                const audioCtx = getAudioCtx();
-                                const totalDuration = spinDuration + 1.2;
-                                const tickCount = Math.max(30, Math.floor(spinDuration * 15));
-                                
-                                for (let i = 0; i < tickCount; i++) {
-                                    const oscillator = audioCtx.createOscillator();
-                                    const gainNode = audioCtx.createGain();
-                                    
-                                    oscillator.connect(gainNode);
-                                    gainNode.connect(audioCtx.destination);
-                                    
-                                    oscillator.frequency.value = 1200 + (Math.random() * 200);
-                                    oscillator.type = 'square';
-                                    
-                                    const progress = i / tickCount;
-                                    const delay = progress * progress * totalDuration;
-                                    
-                                    const startTime = audioCtx.currentTime + delay;
-                                    gainNode.gain.setValueAtTime(0.15, startTime);
-                                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.05);
-                                    
-                                    oscillator.start(startTime);
-                                    oscillator.stop(startTime + 0.05);
-                                }
-                            } catch(e) { console.log('Sound error:', e); }
-                        }
-                    };
-                    break;
-                    
-                case 2:
-                    // OPTION 2: Smooth Whooshing
-                    sounds.spin = {
-                        play: function(spinDuration = 2.5) {
-                            try {
-                                const audioCtx = getAudioCtx();
-                                const totalDuration = spinDuration + 1.2;
-                                const oscillator = audioCtx.createOscillator();
-                                const gainNode = audioCtx.createGain();
-                                
-                                oscillator.connect(gainNode);
-                                gainNode.connect(audioCtx.destination);
-                                
-                                oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
-                                oscillator.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + totalDuration);
-                                oscillator.type = 'sawtooth';
-                                
-                                gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-                                gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.1);
-                                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime + totalDuration - 0.3);
-                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + totalDuration);
-                                
-                                oscillator.start(audioCtx.currentTime);
-                                oscillator.stop(audioCtx.currentTime + totalDuration);
-                            } catch(e) { console.log('Sound error:', e); }
-                        }
-                    };
-                    break;
-                    
-                case 3:
-                    // OPTION 3: Mechanical Clicking
-                    sounds.spin = {
-                        play: function(spinDuration = 2.5) {
-                            try {
-                                const audioCtx = getAudioCtx();
-                                const totalDuration = spinDuration + 1.2;
-                                const clickCount = Math.floor(spinDuration * 20);
-                                
-                                for (let i = 0; i < clickCount; i++) {
-                                    const oscillator = audioCtx.createOscillator();
-                                    const gainNode = audioCtx.createGain();
-                                    const filterNode = audioCtx.createBiquadFilter();
-                                    
-                                    oscillator.connect(filterNode);
-                                    filterNode.connect(gainNode);
-                                    gainNode.connect(audioCtx.destination);
-                                    
-                                    filterNode.type = 'bandpass';
-                                    filterNode.frequency.value = 3000;
-                                    
-                                    oscillator.type = 'square';
-                                    oscillator.frequency.value = 100;
-                                    
-                                    const progress = i / clickCount;
-                                    const delay = Math.pow(progress, 1.5) * totalDuration;
-                                    
-                                    const startTime = audioCtx.currentTime + delay;
-                                    gainNode.gain.setValueAtTime(0.3, startTime);
-                                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.03);
-                                    
-                                    oscillator.start(startTime);
-                                    oscillator.stop(startTime + 0.03);
-                                }
-                            } catch(e) { console.log('Sound error:', e); }
-                        }
-                    };
-                    break;
-                    
-                case 4:
-                    // OPTION 4: Electronic Beeping
-                    sounds.spin = {
-                        play: function(spinDuration = 2.5) {
-                            try {
-                                const audioCtx = getAudioCtx();
-                                const totalDuration = spinDuration + 1.2;
-                                const beepCount = Math.floor(spinDuration * 12);
-                                const frequencies = [440, 493, 523, 587, 659];
-                                
-                                for (let i = 0; i < beepCount; i++) {
-                                    const oscillator = audioCtx.createOscillator();
-                                    const gainNode = audioCtx.createGain();
-                                    
-                                    oscillator.connect(gainNode);
-                                    gainNode.connect(audioCtx.destination);
-                                    
-                                    oscillator.frequency.value = frequencies[i % frequencies.length];
-                                    oscillator.type = 'sine';
-                                    
-                                    const progress = i / beepCount;
-                                    const delay = Math.pow(progress, 2) * totalDuration;
-                                    
-                                    const startTime = audioCtx.currentTime + delay;
-                                    gainNode.gain.setValueAtTime(0.18, startTime);
-                                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.08);
-                                    
-                                    oscillator.start(startTime);
-                                    oscillator.stop(startTime + 0.08);
-                                }
-                            } catch(e) { console.log('Sound error:', e); }
-                        }
-                    };
-                    break;
-                    
-                case 5:
-                    // OPTION 5: Drum Roll
-                    sounds.spin = {
-                        play: function(spinDuration = 2.5) {
-                            try {
-                                const audioCtx = getAudioCtx();
-                                const totalDuration = spinDuration + 1.2;
-                                const hitCount = Math.floor(spinDuration * 25);
-                                
-                                for (let i = 0; i < hitCount; i++) {
-                                    const oscillator = audioCtx.createOscillator();
-                                    const gainNode = audioCtx.createGain();
-                                    const filterNode = audioCtx.createBiquadFilter();
-                                    
-                                    oscillator.connect(filterNode);
-                                    filterNode.connect(gainNode);
-                                    gainNode.connect(audioCtx.destination);
-                                    
-                                    filterNode.type = 'lowpass';
-                                    filterNode.frequency.value = 200 + (Math.random() * 100);
-                                    
-                                    oscillator.type = 'sawtooth';
-                                    oscillator.frequency.value = 80 + (Math.random() * 20);
-                                    
-                                    const progress = i / hitCount;
-                                    const delay = Math.pow(progress, 0.8) * totalDuration;
-                                    
-                                    const startTime = audioCtx.currentTime + delay;
-                                    gainNode.gain.setValueAtTime(0.25, startTime);
-                                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.04);
-                                    
-                                    oscillator.start(startTime);
-                                    oscillator.stop(startTime + 0.04);
-                                }
-                            } catch(e) { console.log('Sound error:', e); }
-                        }
-                    };
-                    break;
-                    
-                default:
-                    // Fallback to option 1
-                    sounds.spin = {
-                        play: function(spinDuration = 2.5) {
-                            try {
-                                const audioCtx = getAudioCtx();
-                                const totalDuration = spinDuration + 1.2;
-                                const tickCount = Math.max(30, Math.floor(spinDuration * 15));
-                                
-                                for (let i = 0; i < tickCount; i++) {
-                                    const oscillator = audioCtx.createOscillator();
-                                    const gainNode = audioCtx.createGain();
-                                    
-                                    oscillator.connect(gainNode);
-                                    gainNode.connect(audioCtx.destination);
-                                    
-                                    oscillator.frequency.value = 1200 + (Math.random() * 200);
-                                    oscillator.type = 'square';
-                                    
-                                    const progress = i / tickCount;
-                                    const delay = progress * progress * totalDuration;
-                                    
-                                    const startTime = audioCtx.currentTime + delay;
-                                    gainNode.gain.setValueAtTime(0.15, startTime);
-                                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.05);
-                                    
-                                    oscillator.start(startTime);
-                                    oscillator.stop(startTime + 0.05);
-                                }
-                            } catch(e) { console.log('Sound error:', e); }
-                        }
-                    };
-            }
+            };
             
             /* ALTERNATIVE SPIN SOUND OPTIONS - Uncomment to use
             
