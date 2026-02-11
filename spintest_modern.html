@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="color-scheme" content="light">
     <title>Chickilicious Lucky Spin - Win Your Prize!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <style>
@@ -23,7 +26,7 @@
         }
         
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Poppins', 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', sans-serif;
             background: linear-gradient(135deg, #f5a3b8 0%, #e88da5 50%, #dd7a93 100%);
             min-height: 100vh;
             max-height: 100vh;
@@ -478,6 +481,11 @@
             font-size: clamp(50px, 9vh, 100px);
             position: relative;
             transition: transform 0.3s ease;
+            /* Better emoji rendering */
+            font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
         
         .reel-symbol img {
@@ -1525,11 +1533,11 @@
     </div>
 
     <script>
-        // Dynamic server URL detection
+        // Dynamic server URL detection - prioritize current origin for production
         const SERVER_URLS = [
-            'http://192.168.50.146:3000', // LAN IP (try this first for mobile)
-            'http://localhost:3000', // Localhost
-            window.location.origin // Current origin (if same server)
+            window.location.origin, // Current origin (production deployment - try FIRST)
+            'http://localhost:3000', // Localhost for local dev
+            'http://192.168.50.146:3000' // LAN IP for mobile testing
         ];
         
         async function fetchFromServer(endpoint) {
@@ -1537,7 +1545,7 @@
                 try {
                     console.log(`Trying to fetch from: ${baseUrl}${endpoint}`);
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+                    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout (reduced from 5)
                     
                     const res = await Promise.race([
                         fetch(`${baseUrl}${endpoint}`, { 
@@ -1546,7 +1554,7 @@
                             signal: controller.signal
                         }),
                         new Promise((_, reject) => 
-                            setTimeout(() => reject(new Error('Fetch timeout')), 5000)
+                            setTimeout(() => reject(new Error('Fetch timeout')), 3000)
                         )
                     ]);
                     
@@ -1555,12 +1563,12 @@
                     if (res && res.ok) {
                         try {
                             const text = await res.text();
-                            if (!text) {
-                                console.log(`✗ Empty response from ${baseUrl}`);
+                            if (!text || text === 'null') {
+                                console.log(`✗ Empty/null response from ${baseUrl}`);
                                 continue;
                             }
                             const data = JSON.parse(text);
-                            console.log(`✓ Success from ${baseUrl}`);
+                            console.log(`✓ Success from ${baseUrl}`, endpoint, data);
                             return data;
                         } catch (parseError) {
                             console.log(`✗ JSON parse error from ${baseUrl}: ${parseError.message}`);
@@ -1575,7 +1583,7 @@
                     }
                 }
             }
-            console.log('All server URLs failed, using defaults');
+            console.log(`All server URLs failed for ${endpoint}, using defaults`);
             return null;
         }
         
@@ -1888,7 +1896,7 @@
                     symbols = serverData.map(s => s.image || s.emoji);
                     console.log('Loaded symbols from server:', symbols.length);
                 } else {
-                    // Use default symbols if server fails
+                    // Use default symbols if server fails - with variation selectors for color emoji
                     symbols = ['🍒', '7️⃣', '🍋', '🍊', '⭐', '💎', '🔔', '🍀'];
                 }
             } catch (e) {
