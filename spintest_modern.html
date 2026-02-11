@@ -759,7 +759,7 @@
             justify-content: center;
             align-items: center;
             z-index: 10000;
-            transition: opacity 0.5s;
+            transition: opacity 0.3s ease-out;
         }
         
         .loading.hidden {
@@ -1653,7 +1653,7 @@
             // Load symbols from SERVER ONLY
             try {
                 const settingsPromise = fetchFromServer('/api/load/symbols');
-                const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(null), 6000));
+                const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(null), 800));
                 const serverData = await Promise.race([settingsPromise, timeoutPromise]);
                 
                 if (serverData && serverData.length > 0) {
@@ -1671,7 +1671,7 @@
             // PRE-LOAD probabilities from SERVER ONLY
             try {
                 const oddsPromise = fetchFromServer('/api/load/probabilities');
-                const oddsTimeout = new Promise(resolve => setTimeout(() => resolve(null), 3000));
+                const oddsTimeout = new Promise(resolve => setTimeout(() => resolve(null), 800));
                 const serverOdds = await Promise.race([oddsPromise, oddsTimeout]);
                 
                 if (serverOdds) {
@@ -1685,7 +1685,7 @@
             // PRE-LOAD spin speed from SERVER ONLY
             try {
                 const speedPromise = fetchFromServer('/api/load/spinSpeed');
-                const speedTimeout = new Promise(resolve => setTimeout(() => resolve(null), 3000));
+                const speedTimeout = new Promise(resolve => setTimeout(() => resolve(null), 800));
                 const serverSpeed = await Promise.race([speedPromise, speedTimeout]);
                 
                 if (serverSpeed) {
@@ -1708,7 +1708,7 @@
             try {
                 // Load background from SERVER ONLY
                 const bgPromise = fetchFromServer('/api/load/background');
-                const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(null), 6000));
+                const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(null), 800));
                 const bgData = await Promise.race([bgPromise, timeoutPromise]);
                 
                 if (bgData) {
@@ -1735,7 +1735,7 @@
             try {
                 // Load color theme from SERVER ONLY
                 const themePromise = fetchFromServer('/api/load/colorTheme');
-                const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(null), 6000));
+                const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(null), 800));
                 const themeData = await Promise.race([themePromise, timeoutPromise]);
                 
                 if (themeData) {
@@ -1904,9 +1904,6 @@
             const currentDuration = duration;
             console.log('Using cached duration:', currentDuration);
             
-            // Play spin sound synchronized with actual duration
-            if (sounds.spin) sounds.spin.play(currentDuration);
-            
             // Determine outcome
             const r = Math.random() * 100;
             let result = 'NO_MATCH';
@@ -1936,6 +1933,13 @@
                 // Reset position
                 strip.style.transition = 'none';
                 strip.style.transform = 'translateY(0)';
+                
+                // Play sound when first reel starts spinning
+                if (i === 1 && sounds.spin) {
+                    setTimeout(() => {
+                        sounds.spin.play(currentDuration);
+                    }, 400);
+                }
                 
                 // Start spin after stagger delay (each reel starts 400ms after previous)
                 setTimeout(() => {
@@ -2159,7 +2163,7 @@
             try {
                 // Load legend layout from SERVER ONLY
                 const legendPromise = fetchFromServer('/api/load/layout-legend');
-                const legendTimeout = new Promise(resolve => setTimeout(() => resolve(null), 3000));
+                const legendTimeout = new Promise(resolve => setTimeout(() => resolve(null), 800));
                 const legendLayout = await Promise.race([legendPromise, legendTimeout]);
                 
                 if (legendLayout) {
@@ -2169,7 +2173,7 @@
                 
                 // Load machine layout from SERVER ONLY
                 const machinePromise = fetchFromServer('/api/load/layout-machine');
-                const machineTimeout = new Promise(resolve => setTimeout(() => resolve(null), 3000));
+                const machineTimeout = new Promise(resolve => setTimeout(() => resolve(null), 800));
                 const machineLayout = await Promise.race([machinePromise, machineTimeout]);
                 
                 if (machineLayout) {
@@ -2195,7 +2199,7 @@
                 if (templateMode === 'true') {
                     // Load the template image from SERVER ONLY
                     const templatePromise = fetchFromServer('/api/load/full-template');
-                    const templateTimeout = new Promise(resolve => setTimeout(() => resolve(null), 3000));
+                    const templateTimeout = new Promise(resolve => setTimeout(() => resolve(null), 800));
                     const templateImage = await Promise.race([templatePromise, templateTimeout]);
                     
                     if (templateImage) {
@@ -2210,15 +2214,16 @@
             }
         }
 
-                // Initialize
+                // Initialize - Load everything in parallel for faster loading
         window.onload = async () => {
-            await loadSettings();
-            await loadFullTemplate();
-            await loadLayouts();
+            // Load all settings simultaneously instead of waiting for each one
+            await Promise.all([
+                loadSettings(),
+                loadFullTemplate(),
+                loadLayouts(),
+                initSounds()
+            ]);
             
-            
-            // Initialize sound effects
-            await initSounds();
             // Populate prize legend with actual symbols
             populatePrizeLegend();
             
@@ -2296,10 +2301,8 @@
                 }
             }
             
-            // Hide loading screen
-            setTimeout(() => {
-                document.getElementById('loading').classList.add('hidden');
-            }, 1000);
+            // Hide loading screen immediately after content loads
+            document.getElementById('loading').classList.add('hidden');
         };
     </script>
 </body>
