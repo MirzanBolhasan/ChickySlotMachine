@@ -1237,6 +1237,190 @@
             padding: 24px;
             font-size: 32px;
         }
+
+        /* ============================================
+           MOBILE-ONLY ENHANCEMENTS (PHONES)
+           Desktop styling remains unchanged!
+           ============================================ */
+        
+        /* Enhanced mobile layout for better fit */
+        @media (max-width: 768px) {
+            /* Ensure no horizontal scroll */
+            html {
+                overflow-x: hidden;
+            }
+            
+            body {
+                overflow-x: hidden;
+                width: 100vw;
+            }
+            
+            /* Make container use full mobile screen */
+            .container {
+                max-width: 100vw;
+                width: 100%;
+                max-height: 100vh;
+            }
+            
+            /* Better touch targets */
+            button, .btn {
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
+            }
+            
+            /* Prevent text selection on mobile */
+            .slot-machine, .reel, .spin-button {
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+        }
+        
+        /* Mobile fullscreen mode (iOS compatible) */
+        @media (max-width: 768px) {
+            body.mobile-fullscreen {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                overflow: hidden;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            }
+            
+            body.mobile-fullscreen .header {
+                display: none !important;
+            }
+            
+            body.mobile-fullscreen .prize-legend {
+                display: none !important;
+            }
+            
+            body.mobile-fullscreen .container {
+                max-height: 100vh;
+                height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 10px;
+            }
+            
+            body.mobile-fullscreen .slot-machine {
+                max-height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            
+            body.mobile-fullscreen .reels-container {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                max-height: 60vh;
+            }
+            
+            body.mobile-fullscreen .reel {
+                height: auto;
+                max-height: 100%;
+            }
+            
+            body.mobile-fullscreen .info-display {
+                margin-bottom: 15px;
+            }
+            
+            body.mobile-fullscreen .spin-button {
+                font-size: 28px;
+                padding: 25px;
+                margin-top: 15px;
+            }
+            
+            /* Fullscreen button larger in mobile fullscreen */
+            body.mobile-fullscreen .fullscreen-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 30px;
+                z-index: 10001;
+            }
+        }
+        
+        /* Extra small phones (iPhone SE, etc) */
+        @media (max-width: 375px) {
+            .slot-machine {
+                padding: 15px 10px !important;
+            }
+            
+            .reels-container {
+                gap: 6px !important;
+                padding: 10px !important;
+            }
+            
+            .reel {
+                height: 150px !important;
+            }
+            
+            .reel-symbol {
+                height: 50px !important;
+                font-size: 35px !important;
+            }
+            
+            .spin-button {
+                font-size: 20px !important;
+                padding: 18px !important;
+            }
+        }
+        
+        /* Landscape mode on mobile */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .header {
+                margin-bottom: 10px;
+            }
+            
+            .slot-machine {
+                padding: 15px 10px;
+            }
+            
+            .reels-container {
+                max-height: 50vh;
+            }
+            
+            .reel {
+                height: auto;
+                max-height: 40vh;
+            }
+            
+            .info-display {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+            
+            .spin-button {
+                padding: 15px;
+                font-size: 20px;
+            }
+        }
+
+        /* Mobile viewport height fix (handles address bar) */
+        @media (max-width: 768px) {
+            :root {
+                --vh: 1vh;
+            }
+            
+            html {
+                height: 100vh;
+                height: calc(var(--vh, 1vh) * 100);
+            }
+            
+            body {
+                min-height: 100vh;
+                min-height: calc(var(--vh, 1vh) * 100);
+            }
+            
+            .container {
+                max-height: 100vh;
+                max-height: calc(var(--vh, 1vh) * 100);
+            }
+        }
     </style>
 </head>
 <body>
@@ -1924,45 +2108,72 @@
                 targets[2] = symbols.find(s => s !== baseSymbol && s !== targets[1]) || symbols[1];
             }
             
+            // Track where the target symbol lands in each reel (changes each spin)
+            const targetIndices = {};
+
             // Spin each reel with stagger
             [1, 2, 3].forEach(i => {
                 const strip = document.getElementById('reel' + i);
                 const reel = strip.closest('.reel');
-                fillReel(strip, targets[i - 1]);
-                
-                // Reset position
-                strip.style.transition = 'none';
-                strip.style.transform = 'translateY(0)';
-                
-                // Play sound when first reel starts spinning
-                if (i === 1 && sounds.spin) {
-                    setTimeout(() => {
-                        sounds.spin.play(currentDuration);
-                    }, 400);
-                }
-                
+
                 // Start spin after stagger delay (each reel starts 400ms after previous)
                 setTimeout(() => {
-                    // Add visual feedback that this reel is now spinning
+                    // Get current Y position WITHOUT resetting — icons stay exactly as-is
+                    const matrix = new DOMMatrix(window.getComputedStyle(strip).transform);
+                    const currentY = matrix.m42;
+
+                    // Append new random symbols + target to the BOTTOM of the existing strip
+                    // This way the currently visible icons never change/jump
+                    const existingCount = strip.children.length;
+                    const addCount = 35;
+                    const targetIndexInNew = addCount - 14; // target near the end of new batch
+                    targetIndices[i] = existingCount + targetIndexInNew;
+
+                    for (let j = 0; j < addCount; j++) {
+                        const div = document.createElement('div');
+                        div.className = 'reel-symbol';
+                        const isTarget = (j === targetIndexInNew);
+                        const sym = (isTarget && targets[i - 1]) ? targets[i - 1] : symbols[Math.floor(Math.random() * symbols.length)];
+
+                        if (sym && sym.startsWith('data:image')) {
+                            const img = document.createElement('img');
+                            img.src = sym;
+                            div.appendChild(img);
+                        } else {
+                            div.textContent = sym || '?';
+                        }
+                        strip.appendChild(div);
+                    }
+
+                    // Keep current visual (no jump — icons look exactly the same)
+                    strip.style.transition = 'none';
+                    strip.style.transform = `translateY(${currentY}px)`;
+
+                    // Sound plays the moment reel 1 starts rolling
+                    if (i === 1 && sounds.spin) {
+                        sounds.spin.play(currentDuration);
+                    }
+
                     reel.classList.add('active-spin');
                     strip.classList.add('spinning');
-                    
-                    strip.style.transition = `transform ${currentDuration}s cubic-bezier(0.25, 0.1, 0.25, 1)`;
-                    const reelHeight = strip.offsetHeight;
-                    const symbolHeight = reelHeight / 30;
-                    // Position symbol 14 in the MIDDLE row (not top), so subtract 13 symbols
-                    strip.style.transform = `translateY(${-13 * symbolHeight}px)`;
-                }, i * 400); // Increased stagger from 150ms to 400ms
-                
-                // Remove blur and active state when reel stops
+
+                    // rAF ensures new symbols are rendered before animating
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            const symbolHeight = strip.children[0].offsetHeight;
+                            strip.style.transition = `transform ${currentDuration}s cubic-bezier(0.25, 0.1, 0.25, 1)`;
+                            // Scroll down to land target symbol in the center
+                            strip.style.transform = `translateY(${-(targetIndices[i] - 1) * symbolHeight}px)`;
+                        });
+                    });
+                }, i * 400);
+
+                // Remove active state when reel stops
                 setTimeout(() => {
                     strip.classList.remove('spinning');
-                    // Add reveal flash effect
                     reel.classList.add('reveal-flash');
-                    // Add slight delay before removing active state for smooth transition
                     setTimeout(() => {
                         reel.classList.remove('active-spin');
-                        // Remove flash after animation completes
                         setTimeout(() => {
                             reel.classList.remove('reveal-flash');
                         }, 500);
@@ -1982,50 +2193,42 @@
                 
                 // Highlight ONLY the matching symbols based on result
                 if (result === 'THREE_MATCH') {
-                    // All 3 symbols match - highlight all 3
                     [1, 2, 3].forEach(i => {
                         const strip = document.getElementById('reel' + i);
-                        const symbols = strip.querySelectorAll('.reel-symbol');
-                        if (symbols[14]) {
-                            symbols[14].classList.add('winning');
-                            setTimeout(() => symbols[14].classList.remove('winning'), 1000);
+                        const allSymbols = strip.querySelectorAll('.reel-symbol');
+                        const idx = targetIndices[i];
+                        if (allSymbols[idx]) {
+                            allSymbols[idx].classList.add('winning');
+                            setTimeout(() => allSymbols[idx].classList.remove('winning'), 1000);
                         }
                     });
                 } else if (result === 'TWO_MATCH') {
-                    // Only first 2 symbols match - highlight only reels 1 and 2
                     [1, 2].forEach(i => {
                         const strip = document.getElementById('reel' + i);
-                        const symbols = strip.querySelectorAll('.reel-symbol');
-                        if (symbols[14]) {
-                            symbols[14].classList.add('winning');
-                            setTimeout(() => symbols[14].classList.remove('winning'), 1000);
+                        const allSymbols = strip.querySelectorAll('.reel-symbol');
+                        const idx = targetIndices[i];
+                        if (allSymbols[idx]) {
+                            allSymbols[idx].classList.add('winning');
+                            setTimeout(() => allSymbols[idx].classList.remove('winning'), 1000);
                         }
                     });
                 }
-                // NO_MATCH: Don't highlight anything
                 
                 // Show prize popup with actual icons
                 const prizeConfig = prizes[result];
                 const popup = document.getElementById('popup');
                 const emojiContainer = popup.querySelector('.emoji');
-                
-                // Clear previous emoji/icon
                 emojiContainer.innerHTML = '';
                 
-                // Determine which icon to show
                 let iconToShow;
                 if (result === 'THREE_MATCH') {
-                    // Show the matched symbol
                     iconToShow = targets[0];
                 } else if (result === 'TWO_MATCH') {
-                    // Show the two matching symbols
                     iconToShow = targets[0];
                 } else {
-                    // NO_MATCH - show a sad/neutral emoji or icon
-                    iconToShow = '😅'; // Could also use targets[0] or a specific icon
+                    iconToShow = '😅';
                 }
                 
-                // Create and append the icon element
                 if (iconToShow.startsWith('data:image')) {
                     const img = document.createElement('img');
                     img.src = iconToShow;
@@ -2038,7 +2241,6 @@
                 document.getElementById('popup-message').textContent = prizeConfig.message;
                 document.getElementById('popup-prize').textContent = prizeConfig.prize;
                 popup.classList.add('show');
-                
                 
                 // Play result sound
                 if (result === 'THREE_MATCH' && sounds.jackpot) {
@@ -2056,6 +2258,32 @@
                 
                 // Hide popup after delay
                 setTimeout(() => popup.classList.remove('show'), 4000);
+
+                // Trim old symbols from strips to prevent DOM growing unbounded
+                // Keep only ~10 symbols around the winner, reset translateY silently
+                [1, 2, 3].forEach(i => {
+                    const strip = document.getElementById('reel' + i);
+                    const tIdx = targetIndices[i];
+                    if (tIdx == null) return;
+                    const allSymbols = strip.querySelectorAll('.reel-symbol');
+                    const symbolHeight = allSymbols[0]?.offsetHeight;
+                    if (!symbolHeight) return;
+
+                    const keepFrom = Math.max(0, tIdx - 4);
+                    const keepTo = Math.min(allSymbols.length - 1, tIdx + 4);
+                    const toKeep = [];
+                    for (let k = keepFrom; k <= keepTo; k++) {
+                        toKeep.push(allSymbols[k].cloneNode(true));
+                    }
+
+                    strip.style.transition = 'none';
+                    strip.innerHTML = '';
+                    toKeep.forEach(s => strip.appendChild(s));
+
+                    // Winner is now at index (tIdx - keepFrom), re-center it silently
+                    const newIdx = tIdx - keepFrom;
+                    strip.style.transform = `translateY(${-(newIdx - 1) * symbolHeight}px)`;
+                });
             }, (currentDuration * 1000) + 1200 + 700); // 1200ms = 3 reels * 400ms stagger
         }
         
@@ -2216,6 +2444,28 @@
 
                 // Initialize - Load everything in parallel for faster loading
         window.onload = async () => {
+            // iOS-specific fixes for mobile
+            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                // Prevent elastic scrolling on iOS
+                document.body.addEventListener('touchmove', (e) => {
+                    if (e.target === document.body || e.target === document.documentElement) {
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+                
+                // Prevent pinch zoom
+                document.addEventListener('gesturestart', (e) => {
+                    e.preventDefault();
+                });
+                
+                // Add iOS safe area padding
+                if (window.innerHeight > window.innerWidth) {
+                    document.body.style.paddingTop = 'env(safe-area-inset-top)';
+                    document.body.style.paddingBottom = 'env(safe-area-inset-bottom)';
+                }
+            }
+            
+
             // Load all settings simultaneously instead of waiting for each one
             await Promise.all([
                 loadSettings(),
@@ -2249,57 +2499,112 @@
                 fillReel(document.getElementById('reel' + i));
             });
             
-            // Native fullscreen toggle
+            // Mobile-friendly fullscreen toggle
             const fullscreenBtn = document.getElementById('fullscreen-btn');
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            let mobileFullscreenActive = false;
             
             fullscreenBtn.addEventListener('click', () => {
-                if (!document.fullscreenElement && 
-                    !document.webkitFullscreenElement && 
-                    !document.mozFullScreenElement &&
-                    !document.msFullscreenElement) {
-                    // Enter fullscreen
-                    const elem = document.documentElement;
-                    if (elem.requestFullscreen) {
-                        elem.requestFullscreen();
-                    } else if (elem.webkitRequestFullscreen) {
-                        elem.webkitRequestFullscreen();
-                    } else if (elem.mozRequestFullScreen) {
-                        elem.mozRequestFullScreen();
-                    } else if (elem.msRequestFullscreen) {
-                        elem.msRequestFullscreen();
+                // On mobile devices, use CSS-based fullscreen (works on iOS)
+                if (isMobile && window.innerWidth <= 768) {
+                    mobileFullscreenActive = !mobileFullscreenActive;
+                    
+                    if (mobileFullscreenActive) {
+                        document.body.classList.add('mobile-fullscreen');
+                        fullscreenBtn.textContent = '✕';
+                        
+                        // Lock screen orientation to portrait on mobile if supported
+                        if (screen.orientation && screen.orientation.lock) {
+                            screen.orientation.lock('portrait').catch(() => {
+                                // Orientation lock not supported, continue anyway
+                            });
+                        }
+                        
+                        // Try native fullscreen as well (works on some Android devices)
+                        const elem = document.documentElement;
+                        if (elem.requestFullscreen) {
+                            elem.requestFullscreen().catch(() => {});
+                        } else if (elem.webkitRequestFullscreen) {
+                            elem.webkitRequestFullscreen().catch(() => {});
+                        }
+                    } else {
+                        document.body.classList.remove('mobile-fullscreen');
+                        fullscreenBtn.textContent = '⛶';
+                        
+                        // Unlock orientation
+                        if (screen.orientation && screen.orientation.unlock) {
+                            screen.orientation.unlock();
+                        }
+                        
+                        // Exit native fullscreen if active
+                        if (document.exitFullscreen) {
+                            document.exitFullscreen().catch(() => {});
+                        } else if (document.webkitExitFullscreen) {
+                            document.webkitExitFullscreen().catch(() => {});
+                        }
                     }
-                    fullscreenBtn.textContent = '✕';
                 } else {
-                    // Exit fullscreen
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    } else if (document.webkitExitFullscreen) {
-                        document.webkitExitFullscreen();
-                    } else if (document.mozCancelFullScreen) {
-                        document.mozCancelFullScreen();
-                    } else if (document.msExitFullscreen) {
-                        document.msExitFullscreen();
+                    // Desktop: Use native fullscreen API
+                    if (!document.fullscreenElement && 
+                        !document.webkitFullscreenElement && 
+                        !document.mozFullScreenElement &&
+                        !document.msFullscreenElement) {
+                        // Enter fullscreen
+                        const elem = document.documentElement;
+                        if (elem.requestFullscreen) {
+                            elem.requestFullscreen();
+                        } else if (elem.webkitRequestFullscreen) {
+                            elem.webkitRequestFullscreen();
+                        } else if (elem.mozRequestFullScreen) {
+                            elem.mozRequestFullScreen();
+                        } else if (elem.msRequestFullscreen) {
+                            elem.msRequestFullscreen();
+                        }
+                        fullscreenBtn.textContent = '✕';
+                    } else {
+                        // Exit fullscreen
+                        if (document.exitFullscreen) {
+                            document.exitFullscreen();
+                        } else if (document.webkitExitFullscreen) {
+                            document.webkitExitFullscreen();
+                        } else if (document.mozCancelFullScreen) {
+                            document.mozCancelFullScreen();
+                        } else if (document.msExitFullscreen) {
+                            document.msExitFullscreen();
+                        }
+                        fullscreenBtn.textContent = '⛶';
                     }
-                    fullscreenBtn.textContent = '⛶';
                 }
             });
             
-            // Update button icon when fullscreen changes
+            // Update button icon when fullscreen changes (desktop only)
             document.addEventListener('fullscreenchange', updateFullscreenButton);
             document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
             document.addEventListener('mozfullscreenchange', updateFullscreenButton);
             document.addEventListener('MSFullscreenChange', updateFullscreenButton);
             
             function updateFullscreenButton() {
-                if (document.fullscreenElement || 
-                    document.webkitFullscreenElement || 
-                    document.mozFullScreenElement ||
-                    document.msFullscreenElement) {
-                    fullscreenBtn.textContent = '✕';
-                } else {
-                    fullscreenBtn.textContent = '⛶';
+                // Don't update on mobile - mobile uses CSS fullscreen
+                if (!isMobile || window.innerWidth > 768) {
+                    if (document.fullscreenElement || 
+                        document.webkitFullscreenElement || 
+                        document.mozFullScreenElement ||
+                        document.msFullscreenElement) {
+                        fullscreenBtn.textContent = '✕';
+                    } else {
+                        fullscreenBtn.textContent = '⛶';
+                    }
                 }
             }
+            
+            // Handle hardware back button on Android in fullscreen
+            window.addEventListener('popstate', () => {
+                if (mobileFullscreenActive) {
+                    document.body.classList.remove('mobile-fullscreen');
+                    fullscreenBtn.textContent = '⛶';
+                    mobileFullscreenActive = false;
+                }
+            });
             
             // Hide loading screen immediately after content loads
             document.getElementById('loading').classList.add('hidden');
