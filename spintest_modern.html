@@ -342,21 +342,21 @@
         .slot-machine.has-layout::before {
             background-image: var(--machine-layout);
         }
-
-        /* Machine body layout — overlays the reels container */
-        .reels-container {
-            position: relative; /* needed for absolute overlay child */
-        }
-
-        .reels-container .machine-body-overlay {
+        
+        /* Machine body layout — PNG overlays the ENTIRE slot machine card */
+        .machine-body-overlay {
             position: absolute;
-            inset: 0;
-            background-size: 100% 100%; /* stretch to fit exactly */
+            inset: 0;                    /* covers full .slot-machine area */
+            background-size: 100% 100%; /* stretch exactly to machine size */
             background-repeat: no-repeat;
             background-position: center;
             pointer-events: none;
-            z-index: 20; /* above reels but below symbols */
+            z-index: 50;                /* sits above all children */
             border-radius: inherit;
+            display: none;
+        }
+        .machine-body-overlay.active {
+            display: block;
         }
         
         
@@ -1690,13 +1690,14 @@
         </div>
 
         <div class="slot-machine" id="slot-machine">
+            <!-- Machine body layout overlay — designer PNG covers entire machine -->
+            <div class="machine-body-overlay" id="machine-body-overlay"></div>
+
             <div class="layout-image-container" id="machine-layout-container">
                 <img id="machine-layout-img" src="" alt="">
             </div>
 
             <div class="reels-container">
-                <!-- Machine body layout overlay — designer PNG sits on top -->
-                <div class="machine-body-overlay" id="machine-body-overlay" style="display:none;"></div>
                 <div class="reel"><div class="reel-strip" id="reel1"></div></div>
                 <div class="reel"><div class="reel-strip" id="reel2"></div></div>
                 <div class="reel"><div class="reel-strip" id="reel3"></div></div>
@@ -2625,7 +2626,7 @@
         // Load and apply layout designs
         async function loadLayouts() {
             try {
-                // Load legend layout from SERVER ONLY
+                // Load legend layout
                 const legendPromise = fetchFromServer('/api/load/layout-legend');
                 const legendTimeout = new Promise(resolve => setTimeout(() => resolve(null), 800));
                 const legendLayout = await Promise.race([legendPromise, legendTimeout]);
@@ -2635,7 +2636,7 @@
                     document.querySelector('.prize-legend').classList.add('has-layout');
                 }
                 
-                // Load machine layout from SERVER ONLY
+                // Load old machine layout (CSS overlay via ::before)
                 const machinePromise = fetchFromServer('/api/load/layout-machine');
                 const machineTimeout = new Promise(resolve => setTimeout(() => resolve(null), 800));
                 const machineLayout = await Promise.race([machinePromise, machineTimeout]);
@@ -2645,7 +2646,7 @@
                     document.querySelector('.slot-machine').classList.add('has-layout');
                 }
 
-                // Load machine BODY layout (overlays the reels container)
+                // Load machine BODY layout — overlays the whole slot machine card
                 const bodyPromise = fetchFromServer('/api/load/layout-machine-body');
                 const bodyTimeout = new Promise(resolve => setTimeout(() => resolve(null), 800));
                 const machineBodyLayout = await Promise.race([bodyPromise, bodyTimeout]);
@@ -2654,11 +2655,12 @@
                     const overlay = document.getElementById('machine-body-overlay');
                     if (overlay) {
                         overlay.style.backgroundImage = `url(${machineBodyLayout})`;
-                        overlay.style.display = 'block';
-                        // When layout is active, hide the default CSS background of reels-container
-                        document.querySelector('.reels-container').style.background = 'transparent';
-                        document.querySelector('.reels-container').style.border = 'none';
-                        document.querySelector('.reels-container').style.boxShadow = 'none';
+                        overlay.classList.add('active');
+                        // Hide default CSS background so designer PNG is the only skin
+                        document.getElementById('slot-machine').style.background = 'transparent';
+                        document.getElementById('slot-machine').style.backdropFilter = 'none';
+                        document.getElementById('slot-machine').style.border = 'none';
+                        document.getElementById('slot-machine').style.boxShadow = 'none';
                     }
                 }
             } catch (e) {
