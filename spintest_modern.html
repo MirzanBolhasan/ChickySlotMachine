@@ -362,17 +362,22 @@
             transition: filter 0.3s ease;
         }
 
-        .reel-symbol.winning { animation: winningPulse 1s ease-in-out; z-index: 10; }
-        .reel-symbol.winning img {
+        /* Winning: never animate transform on the wrapper — it holds the 3D rotateX/translateZ.
+           Animate only the inner img or text node via a child span. */
+        .reel-symbol.winning { z-index: 10; }
+        .reel-symbol.winning img,
+        .reel-symbol.winning .sym-inner {
+            animation: winningPulse 1s ease-in-out;
             filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8))
                     drop-shadow(0 0 30px rgba(255, 215, 0, 0.6))
                     drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+            display: inline-block;
         }
         @keyframes winningPulse {
-            0% { transform: scale(1); }
-            25% { transform: scale(1.3); }
-            50% { transform: scale(1.15); }
-            75% { transform: scale(1.25); }
+            0%   { transform: scale(1); }
+            25%  { transform: scale(1.3); }
+            50%  { transform: scale(1.15); }
+            75%  { transform: scale(1.25); }
             100% { transform: scale(1); }
         }
 
@@ -863,7 +868,10 @@
                     img.src = sym;
                     div.appendChild(img);
                 } else {
-                    div.textContent = sym || '?';
+                    const inner = document.createElement('span');
+                    inner.className = 'sym-inner';
+                    inner.textContent = sym || '?';
+                    div.appendChild(inner);
                 }
 
                 const angle = -i * ANGLE_STEP;
@@ -886,7 +894,10 @@
             if (symbol && symbol.startsWith('data:image')) {
                 const img = document.createElement('img'); img.src = symbol; slot.appendChild(img);
             } else {
-                slot.textContent = symbol || '?';
+                const inner = document.createElement('span');
+                inner.className = 'sym-inner';
+                inner.textContent = symbol || '?';
+                slot.appendChild(inner);
             }
         }
 
