@@ -233,9 +233,6 @@
             box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
-        /* ================================================
-           3D CYLINDRICAL REEL
-        ================================================ */
         .reel {
             flex: 1;
             height: clamp(250px, 35vh, 500px);
@@ -246,12 +243,10 @@
             transition: box-shadow 0.3s ease, border-color 0.3s ease;
             overflow: hidden;
             background: var(--reel-bg-color);
-            /* Perspective for 3D cylinder */
             perspective: 600px;
             perspective-origin: 50% 50%;
         }
 
-        /* Left/right edge sheen — glass window effect */
         .reel::before {
             content: '';
             position: absolute;
@@ -268,7 +263,6 @@
             border-radius: 14px;
         }
 
-        /* Golden payline in centre */
         .reel::after {
             content: '';
             position: absolute;
@@ -295,7 +289,6 @@
             50% { opacity: 1; box-shadow: 0 0 35px rgba(var(--primary-rgb), 1), 0 0 70px rgba(var(--primary-rgb), 0.7), 0 0 100px rgba(var(--primary-rgb), 0.4); height: 5px; }
         }
 
-        /* Spinning highlight */
         .reel.active-spin {
             border-color: rgba(244, 224, 77, 0.6);
             box-shadow:
@@ -310,7 +303,6 @@
             100% { box-shadow: inset 0 2px 10px rgba(0,0,0,0.5), 0 2px 10px rgba(0,0,0,0.3); }
         }
 
-        /* Top & bottom barrel fade — creates curved drum illusion */
         .reel-mask {
             position: absolute;
             inset: 0;
@@ -328,7 +320,6 @@
             border-radius: 14px;
         }
 
-        /* Subtle glass reflection */
         .reel-glass {
             position: absolute;
             inset: 0;
@@ -338,21 +329,17 @@
             z-index: 25;
         }
 
-        /* ================================================
-           3D CYLINDER STRIP — pivot at vertical centre
-        ================================================ */
         .reel-strip {
             position: absolute;
             top: 50%;
             left: 0;
             width: 100%;
-            height: 0;               /* zero-height pivot point */
+            height: 0;
             transform-style: preserve-3d;
             transform: rotateX(0deg);
             will-change: transform;
         }
 
-        /* Each symbol is a face on the cylinder */
         .reel-symbol {
             position: absolute;
             left: 0;
@@ -375,7 +362,6 @@
             transition: filter 0.3s ease;
         }
 
-        /* Winning symbol highlight */
         .reel-symbol.winning { animation: winningPulse 1s ease-in-out; z-index: 10; }
         .reel-symbol.winning img {
             filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8))
@@ -479,6 +465,8 @@
         .win-popup .prize { font-size: clamp(16px, 3.2vh, 48px); font-weight: 800; color: #c8960c; padding: clamp(10px, 1.6vh, 20px) clamp(16px, 2.8vw, 40px); background: linear-gradient(135deg, rgba(244,224,77,0.25) 0%, rgba(244,197,66,0.15) 100%); border-radius: 14px; border: 3px solid rgba(244, 197, 66, 0.6); text-shadow: 0 1px 8px rgba(200,150,12,0.4); line-height: 1.2; text-align: center; white-space: normal; word-wrap: break-word; max-width: 90%; margin-top: clamp(4px, 0.8vh, 12px); }
         .slot-machine.popup-open { border-radius: 0 0 32px 32px; }
 
+
+
         /* Emoji Rain */
         .emoji-rain { position: fixed; top: -10%; z-index: 999; pointer-events: none; animation: emojiRainFall 3s linear forwards; }
         .emoji-rain img { width: 70px; height: 70px; object-fit: contain; filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)); }
@@ -513,7 +501,6 @@
         .fullscreen-btn:hover { background: rgba(255, 255, 255, 0.2); border-color: rgba(255, 255, 255, 0.4); transform: scale(1.1); }
         .fullscreen-btn:active { transform: scale(0.95); }
 
-        /* Fullscreen states */
         body:fullscreen, body:-webkit-full-screen, body:-moz-full-screen, body:-ms-fullscreen { display: flex; justify-content: center; align-items: center; padding: 20px; }
         body:fullscreen .header, body:-webkit-full-screen .header, body:-moz-full-screen .header, body:-ms-fullscreen .header { display: none; }
         body:fullscreen .container, body:-webkit-full-screen .container, body:-moz-full-screen .container, body:-ms-fullscreen .container { max-width: 1000px; width: 100%; }
@@ -524,9 +511,6 @@
         body:fullscreen .info-display p, body:-webkit-full-screen .info-display p, body:-moz-full-screen .info-display p, body:-ms-fullscreen .info-display p { font-size: 22px; }
         body:fullscreen .spin-button, body:-webkit-full-screen .spin-button, body:-moz-full-screen .spin-button, body:-ms-fullscreen .spin-button { padding: 24px; font-size: 32px; }
 
-        /* =============================================
-           RESPONSIVE
-        ============================================= */
         @media (max-width: 640px) {
             body { padding: 10px; }
             .header { margin-bottom: 16px; }
@@ -559,9 +543,6 @@
             .fullscreen-btn { top: 8px; right: 8px; width: 40px; height: 40px; }
         }
 
-        /* =============================================
-           MOBILE — no scroll, fullscreen button hidden
-        ============================================= */
         @media (max-width: 768px) {
             html, body { overflow: hidden; height: 100%; }
             html { overflow-x: hidden; }
@@ -592,7 +573,6 @@
             .spin-button { padding: 15px; font-size: 20px; }
         }
 
-        /* Mobile fullscreen mode */
         @media (max-width: 768px) {
             body.mobile-fullscreen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
             body.mobile-fullscreen .header { display: none !important; }
@@ -606,9 +586,6 @@
             body.mobile-fullscreen .fullscreen-btn { width: 60px; height: 60px; font-size: 30px; z-index: 10001; }
         }
 
-        /* =============================================
-           9:16 VERTICAL TV OPTIMIZATION
-        ============================================= */
         @media (min-aspect-ratio: 9/16) and (orientation: portrait),
                (max-aspect-ratio: 9/16) and (orientation: portrait) {
             html, body { width: 100vw; height: 100vh; overflow: hidden; }
@@ -619,7 +596,6 @@
             .slot-machine { flex-shrink: 0; margin: 1vh 0; }
             .info-display { flex-shrink: 0; margin: 2vh 0 1.5vh 0; }
             .fullscreen-btn { display: none; }
-            /* Win popup banner layout */
             .win-popup {
                 position: relative !important; top: auto !important; left: auto !important; transform: none !important;
                 max-height: 0 !important; overflow: hidden; opacity: 0; pointer-events: none;
@@ -637,12 +613,6 @@
             .slot-machine.popup-open { border-radius: 0 0 32px 32px !important; }
             .spin-button { padding: 2.5vh 0; font-size: 3.5vh; border-radius: 15px; }
             .info-display p { font-size: 2.2vh; }
-        }
-
-        @media (min-aspect-ratio: 9/16) and (orientation: portrait) {
-            @media (max-height: 1280px) { .header { margin-bottom: 1.5vh; } .prize-legend { margin: 1vh 0; } .slot-machine { margin: 0.5vh 0; } }
-            @media (min-height: 1921px) and (max-height: 2560px) { .header h1 { font-size: 8vh; } .spin-button { padding: 3vh 0; font-size: 4vh; } }
-            @media (min-height: 2561px) { .header h1 { font-size: 10vh; } .header p { font-size: 3.5vh; } .spin-button { padding: 3.5vh 0; font-size: 5vh; } .info-display p { font-size: 3vh; } }
         }
     </style>
 </head>
@@ -690,7 +660,6 @@
             </div>
 
             <div class="reels-container">
-                <!-- Each reel: strip (3D cylinder) + mask (barrel fade) + glass (reflection) -->
                 <div class="reel">
                     <div class="reel-strip" id="reel1"></div>
                     <div class="reel-mask"></div>
@@ -715,6 +684,7 @@
             <button class="spin-button" id="spin-btn">
                 <span id="btn-text">SPIN NOW</span>
             </button>
+
         </div>
     </div>
 
@@ -757,9 +727,8 @@
         // ================================================
         //  CYLINDER CONFIG
         // ================================================
-        // 9 slots on the drum — only 3 visible through the window at once
         const CYLINDER_SYMBOLS = 9;
-        const ANGLE_STEP = 360 / CYLINDER_SYMBOLS;  // 40° per slot
+        const ANGLE_STEP = 360 / CYLINDER_SYMBOLS;
 
         const reelStates = {
             1: { totalRotation: 0, currentFrontSlot: 0 },
@@ -867,9 +836,6 @@
 
         // ================================================
         //  3D CYLINDER — FILL REEL
-        //  Shows exactly 3 symbols in the visible window.
-        //  symbolHeight = reelHeight / 3
-        //  radius chosen so arc between adjacent faces ≈ symbolHeight
         // ================================================
         function fillReel(stripEl, targetSymbol = null, targetSlotIndex = 0) {
             stripEl.innerHTML = '';
@@ -877,12 +843,9 @@
             const reel = stripEl.closest('.reel');
             const reelHeight = reel.offsetHeight;
 
-            // Exactly 3 symbols visible
             const symbolHeight = reelHeight / 3;
-            // Cylinder circumference = CYLINDER_SYMBOLS * symbolHeight
             const radius = (symbolHeight * CYLINDER_SYMBOLS) / (2 * Math.PI);
 
-            // Set reel perspective proportional to cylinder depth
             reel.style.perspective = `${radius * 4}px`;
 
             const fontSize = Math.min(symbolHeight * 0.62, 100);
@@ -903,7 +866,6 @@
                     div.textContent = sym || '?';
                 }
 
-                // Position face on the cylinder: rotate around X, push out by radius
                 const angle = -i * ANGLE_STEP;
                 div.style.height    = symbolHeight + 'px';
                 div.style.top       = (-symbolHeight / 2) + 'px';
@@ -913,7 +875,6 @@
                 stripEl.appendChild(div);
             }
 
-            // Cache dimensions for spin logic
             stripEl.dataset.symbolHeight = symbolHeight;
             stripEl.dataset.radius       = radius;
         }
@@ -930,7 +891,6 @@
         }
 
         function refreshHiddenSlots(stripEl, currentFrontSlot, targetSymbol, targetSlot) {
-            // Refresh slots that aren't currently visible (back of cylinder)
             for (let j = 2; j < CYLINDER_SYMBOLS; j++) {
                 const slotIndex = (currentFrontSlot + j) % CYLINDER_SYMBOLS;
                 const sym = (slotIndex === targetSlot)
@@ -967,13 +927,14 @@
         }
 
         // ================================================
-        //  SPIN BUTTON
+        //  SPIN LOGIC (extracted for reuse)
         // ================================================
-        document.getElementById('spin-btn').onclick = async function () {
-            getAudioCtx();
+        function triggerSpin() {
+            const spinBtn = document.getElementById('spin-btn');
             if (spinning) return;
+            getAudioCtx();
             spinning = true;
-            this.classList.add('disabled');
+            spinBtn.classList.add('disabled');
 
             const btnText = document.getElementById('btn-text');
             btnText.innerHTML = 'SPINNING <span class="spinner-icon">⚡</span>';
@@ -982,7 +943,6 @@
             const odds = cachedOdds;
             const currentDuration = duration;
 
-            // Determine outcome
             const r = Math.random() * 100;
             let result = 'NO_MATCH';
             if (r < odds.THREE_MATCH) result = 'THREE_MATCH';
@@ -998,7 +958,6 @@
             }
 
             const landingSlots = {};
-            const button = this;
 
             [1, 2, 3].forEach(reelIndex => {
                 const stripEl = document.getElementById('reel' + reelIndex);
@@ -1006,7 +965,6 @@
                 const state = reelStates[reelIndex];
 
                 setTimeout(() => {
-                    // Pick a hidden slot for the target
                     const hiddenStart = (state.currentFrontSlot + Math.floor(CYLINDER_SYMBOLS / 2)) % CYLINDER_SYMBOLS;
                     const targetSlot = (hiddenStart + Math.floor(Math.random() * 2)) % CYLINDER_SYMBOLS;
                     landingSlots[reelIndex] = targetSlot;
@@ -1017,16 +975,14 @@
 
                     reel.classList.add('active-spin');
 
-                    // Calculate rotation delta to land targetSlot at front
                     const targetAngleDeg = targetSlot * ANGLE_STEP;
                     const currentAngleDeg = ((state.totalRotation % 360) + 360) % 360;
                     let delta = ((targetAngleDeg - currentAngleDeg) + 360) % 360;
                     if (delta < ANGLE_STEP * 2) delta += 360;
 
-                    const minSpins = 3; // full rotations before landing
+                    const minSpins = 3;
                     const newTotalRotation = state.totalRotation + (minSpins * 360) + delta;
 
-                    // Deceleration easing — realistic slot machine slow-down
                     stripEl.style.transition = `transform ${currentDuration}s cubic-bezier(0.12, 0.0, 0.18, 1)`;
                     stripEl.style.transform = `rotateX(${newTotalRotation}deg)`;
 
@@ -1035,7 +991,6 @@
 
                 }, reelIndex * 400);
 
-                // Remove active spin after reel stops
                 setTimeout(() => {
                     reel.classList.remove('active-spin');
                     reel.classList.add('reveal-flash');
@@ -1043,16 +998,14 @@
                 }, currentDuration * 1000 + reelIndex * 400 + 100);
             });
 
-            // Show result after all reels settle
             const totalDelay = (currentDuration * 1000) + (3 * 400) + 700;
 
             setTimeout(() => {
                 spinning = false;
-                button.classList.remove('disabled');
+                spinBtn.classList.remove('disabled');
                 btnText.textContent = 'SPIN AGAIN';
                 document.getElementById('info-text').textContent = 'Press SPIN to play!';
 
-                // Highlight winning symbols
                 const highlightReels = result === 'THREE_MATCH' ? [1,2,3] : result === 'TWO_MATCH' ? [1,2] : [];
                 highlightReels.forEach(i => {
                     const stripEl = document.getElementById('reel' + i);
@@ -1064,7 +1017,6 @@
                     }
                 });
 
-                // Win popup
                 const prizeConfig = prizes[result];
                 const popup = document.getElementById('popup');
                 const emojiContainer = popup.querySelector('.emoji');
@@ -1095,10 +1047,30 @@
                 }, 4000);
 
             }, totalDelay);
+        }
+
+        // ================================================
+        //  SPIN BUTTON CLICK
+        // ================================================
+        document.getElementById('spin-btn').onclick = function () {
+            triggerSpin();
         };
 
         // ================================================
-        //  SETTINGS LOADERS (original code, unchanged)
+        //  SPACEBAR SHORTCUT
+        // ================================================
+        document.addEventListener('keydown', function (e) {
+            // Only trigger on Space, and not when user is typing in an input
+            if (e.code === 'Space' || e.key === ' ') {
+                const tag = document.activeElement && document.activeElement.tagName;
+                if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+                e.preventDefault(); // prevent page scroll
+                triggerSpin();
+            }
+        });
+
+        // ================================================
+        //  SETTINGS LOADERS
         // ================================================
         async function loadSettings() {
             try {
@@ -1254,7 +1226,6 @@
         //  INIT
         // ================================================
         window.onload = async () => {
-            // iOS fixes
             if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
                 document.body.addEventListener('touchmove', (e) => {
                     if (e.target === document.body || e.target === document.documentElement) e.preventDefault();
@@ -1270,7 +1241,6 @@
 
             populatePrizeLegend();
 
-            // Animate logo
             const logoChars = splitTextToChars('.animated-logo');
             if (logoChars.length > 0) {
                 anime.timeline({ loop: true })
@@ -1287,7 +1257,6 @@
                     .add({}, 2500);
             }
 
-            // Fill all reels with 3D cylinder symbols (exactly 3 visible)
             [1, 2, 3].forEach(i => {
                 const stripEl = document.getElementById('reel' + i);
                 fillReel(stripEl, null, 0);
@@ -1297,7 +1266,6 @@
                 reelStates[i].currentFrontSlot = 0;
             });
 
-            // Fullscreen toggle (original logic)
             const fullscreenBtn = document.getElementById('fullscreen-btn');
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             let mobileFullscreenActive = false;
