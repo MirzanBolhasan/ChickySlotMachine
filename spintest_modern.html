@@ -362,23 +362,46 @@
             transition: filter 0.3s ease;
         }
 
-        /* Winning: never animate transform on the wrapper — it holds the 3D rotateX/translateZ.
-           Animate only the inner img or text node via a child span. */
-        .reel-symbol.winning { z-index: 10; }
+        /* ── Winning highlight ──────────────────────────────────────────────────
+           NEVER put transform:scale on .reel-symbol or its children.
+           Those elements live inside a preserve-3d / backface-visibility:hidden
+           context; any transform animation on them forces the browser to flatten
+           the 3D layer, making the front-facing face go invisible.
+
+           Safe approach:
+             • Glow pulse → animate box-shadow on the REEL container (outside 3D)
+             • Symbol pop  → animate width/height on the img / .sym-inner
+               (size change, not transform, so no compositing conflict)
+        ───────────────────────────────────────────────────────────────────── */
+        .reel.winning-reel {
+            animation: reelGlowPulse 0.5s ease-in-out 3;
+            border-color: rgba(255, 215, 0, 0.9) !important;
+        }
+        @keyframes reelGlowPulse {
+            0%, 100% { box-shadow: inset 0 2px 10px rgba(0,0,0,0.5), 0 0 15px rgba(255,215,0,0.5); }
+            50%      { box-shadow: inset 0 2px 10px rgba(0,0,0,0.5), 0 0 40px rgba(255,215,0,1), 0 0 70px rgba(255,215,0,0.6); }
+        }
+
+        /* Static bright glow on the winning symbol — no transform, no animation */
         .reel-symbol.winning img,
         .reel-symbol.winning .sym-inner {
-            animation: winningPulse 1s ease-in-out;
-            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8))
-                    drop-shadow(0 0 30px rgba(255, 215, 0, 0.6))
-                    drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
-            display: inline-block;
+            filter: drop-shadow(0 0 12px rgba(255, 215, 0, 1))
+                    drop-shadow(0 0 24px rgba(255, 215, 0, 0.8));
+            animation: symPop 0.5s ease-out forwards;
         }
-        @keyframes winningPulse {
-            0%   { transform: scale(1); }
-            25%  { transform: scale(1.3); }
-            50%  { transform: scale(1.15); }
-            75%  { transform: scale(1.25); }
-            100% { transform: scale(1); }
+        /* Animate size via width/height — safe inside preserve-3d */
+        @keyframes symPop {
+            0%   { width: 78%;  height: 78%; }
+            40%  { width: 110%; height: 110%; }
+            70%  { width: 95%;  height: 95%; }
+            100% { width: 105%; height: 105%; }
+        }
+        .reel-symbol.winning .sym-inner {
+            display: inline-block;
+            width: 78%;
+            height: 78%;
+            line-height: 1;
+            text-align: center;
         }
 
         /* Info Display */
@@ -1020,11 +1043,18 @@
                 const highlightReels = result === 'THREE_MATCH' ? [1,2,3] : result === 'TWO_MATCH' ? [1,2] : [];
                 highlightReels.forEach(i => {
                     const stripEl = document.getElementById('reel' + i);
+                    const reel = stripEl.closest('.reel');
                     const slot = landingSlots[i];
                     const symbolEls = stripEl.querySelectorAll('.reel-symbol');
+
+                    // Pulse the reel border/glow (safe — outside preserve-3d)
+                    reel.classList.add('winning-reel');
+                    setTimeout(() => reel.classList.remove('winning-reel'), 1600);
+
+                    // Highlight the symbol (width/height animation — no transform conflict)
                     if (symbolEls[slot]) {
                         symbolEls[slot].classList.add('winning');
-                        setTimeout(() => symbolEls[slot].classList.remove('winning'), 1000);
+                        setTimeout(() => symbolEls[slot].classList.remove('winning'), 1600);
                     }
                 });
 
